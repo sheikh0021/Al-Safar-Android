@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,10 +54,18 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToUmrahGuide: () -> Unit,
     onNavigateToTripDashboard: () -> Unit,
-    onNavigateToSupport: () -> Unit
+    onNavigateToSupport: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedFilter by remember { mutableStateOf<String?>(null) }
+    val logoutComplete by viewModel.logoutComplete.collectAsState()
+
+    LaunchedEffect(logoutComplete) {
+        if (logoutComplete){
+            onLogout()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -84,6 +94,9 @@ fun HomeScreen(
                     }
                     IconButton(onClick = onNavigateToSupport) {
                         Icon(Icons.Default.Help, "Support")
+                    }
+                    IconButton(onClick = {viewModel.logout()}) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
                     }
                 }
             )

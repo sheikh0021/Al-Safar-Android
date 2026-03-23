@@ -64,7 +64,12 @@ fun NavGraph(navController: NavHostController) {
                 navController = navController,
                 onNavigateToUmrahGuide = { navController.navigate(Screen.UmrahGuide.route) },
                 onNavigateToTripDashboard = { navController.navigate(Screen.TripDashboard.route) },
-                onNavigateToSupport = { navController.navigate(Screen.Support.route) }
+                onNavigateToSupport = { navController.navigate(Screen.Support.route) },
+                onLogout = {
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(Screen.Home.route) {inclusive = true}
+                    }
+                }
             )
         }
 

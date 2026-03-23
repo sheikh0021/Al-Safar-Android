@@ -3,6 +3,7 @@ package com.application.al_safar.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.al_safar.domain.model.Package
+import com.application.al_safar.domain.usecase.auth.LogoutUseCase
 import com.application.al_safar.domain.usecase.booking.GetPackagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +13,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getPackagesUseCase: GetPackagesUseCase
+    private val getPackagesUseCase: GetPackagesUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    private val _logoutComplete = MutableStateFlow(false)
+    val logoutComplete: StateFlow<Boolean> = _logoutComplete
 
     init {
         loadPackages(null)
@@ -30,6 +35,13 @@ class HomeViewModel @Inject constructor(
                 .onFailure { error ->
                     _uiState.value = HomeUiState.Error(error.message ?: "Failed to load packages")
                 }
+        }
+    }
+
+    fun logout(){
+        viewModelScope.launch {
+            logoutUseCase()
+            _logoutComplete.value = true
         }
     }
 }
