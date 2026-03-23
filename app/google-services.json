@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073574920224",
+    "project_id": "al-safar-6ad44",
+    "storage_bucket": "al-safar-6ad44.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073574920224:android:042bae10dc20027d5dfc45",
+        "android_client_info": {
+          "package_name": "com.application.al_safar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCXp0e5SkWbqB5djBGOKTM2LcqDfgWms4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
