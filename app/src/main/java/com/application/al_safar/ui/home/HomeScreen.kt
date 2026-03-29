@@ -216,7 +216,7 @@ private fun PackageCard(pkg: Package, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "$${pkg.price}",
+                    text = "₹${pkg.price}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
