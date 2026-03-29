@@ -40,7 +40,7 @@ class BookingViewModel @Inject constructor(
     private val _currentBooking = MutableStateFlow<Booking?>(null)
     val currentBooking: StateFlow<Booking?> = _currentBooking.asStateFlow()
 
-    private val formatter = DateTimeFormatter.ISO_DATE
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     fun loadGroups() {
         viewModelScope.launch {

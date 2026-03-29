@@ -149,7 +149,7 @@ private fun PackageDetailContent(pkg: Package, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "$${pkg.price}",
+                text = "₹${pkg.price}",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

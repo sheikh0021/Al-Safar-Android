@@ -1,5 +1,6 @@
 package com.application.al_safar.di
 
+import com.application.al_safar.BuildConfig
 import com.application.al_safar.data.remote.api.*
 import com.application.al_safar.data.remote.interceptors.AuthInterceptor
 import com.application.al_safar.util.ApiConfig
@@ -33,7 +34,8 @@ object NetworkModule {
         authInterceptor: AuthInterceptor
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+                    else HttpLoggingInterceptor.Level.NONE
         }
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)

@@ -175,7 +175,7 @@ private fun BookingCard(booking: Booking, onPayClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$${booking.totalAmount}",
+                    text = "₹${booking.totalAmount}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
