@@ -11,6 +11,7 @@ sealed class Screen(val route: String) {
     object TripDashboard : Screen("trip_dashboard")
     object Support : Screen("support")
     object Map : Screen("map")
+    object AiChatbot : Screen("ai_chatbot")
 
     object PackageDetail : Screen("package_detail/{packageId}") {
         fun createRoute(packageId: String) = "package_detail/$packageId"

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Card
@@ -55,6 +56,7 @@ fun HomeScreen(
     onNavigateToUmrahGuide: () -> Unit,
     onNavigateToTripDashboard: () -> Unit,
     onNavigateToSupport: () -> Unit,
+    onNavigateToAiChatbot: () -> Unit,
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -94,6 +96,11 @@ fun HomeScreen(
                     }
                     IconButton(onClick = onNavigateToSupport) {
                         Icon(Icons.Default.Help, "Support")
+                    }
+                    IconButton(
+                        onClick = onNavigateToAiChatbot
+                    ) {
+                        Icon(Icons.Default.Chat, contentDescription = "AI Chatbot")
                     }
                     IconButton(onClick = {viewModel.logout()}) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Logout")

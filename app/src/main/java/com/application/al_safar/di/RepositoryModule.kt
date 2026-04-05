@@ -94,4 +94,12 @@ object RepositoryModule {
     ): EmergencyRepository {
         return EmergencyRepositoryImpl(emergencyApi)
     }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        chatApi: ChatApi
+    ): ChatRepository{
+        return ChatRepositoryImpl(chatApi)
+    }
 }
