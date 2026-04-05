@@ -12,6 +12,7 @@ import com.application.al_safar.ui.booking.BookingDateGroupScreen
 import com.application.al_safar.ui.booking.ConfirmationScreen
 import com.application.al_safar.ui.booking.PaymentScreen
 import com.application.al_safar.ui.booking.UploadDocumentsScreen
+import com.application.al_safar.ui.chatbot.AiChatbotScreen
 import com.application.al_safar.ui.guide.DuaCollectionScreen
 import com.application.al_safar.ui.guide.UmrahGuideScreen
 import com.application.al_safar.ui.guide.UmrahStepDetailScreen
@@ -65,6 +66,7 @@ fun NavGraph(navController: NavHostController) {
                 onNavigateToUmrahGuide = { navController.navigate(Screen.UmrahGuide.route) },
                 onNavigateToTripDashboard = { navController.navigate(Screen.TripDashboard.route) },
                 onNavigateToSupport = { navController.navigate(Screen.Support.route) },
+                onNavigateToAiChatbot = {navController.navigate(Screen.AiChatbot.route)},
                 onLogout = {
                     navController.navigate(Screen.Login.route){
                         popUpTo(Screen.Home.route) {inclusive = true}
@@ -155,6 +157,9 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(Screen.Map.route) {
             MapScreen()
+        }
+        composable(Screen.AiChatbot.route) {
+            AiChatbotScreen(navController = navController)
         }
     }
 }

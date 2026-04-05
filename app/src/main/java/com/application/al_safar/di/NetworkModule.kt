@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import com.application.al_safar.data.remote.api.ChatApi
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -77,4 +78,7 @@ object NetworkModule {
 
     @Provides
     fun provideBookingApi(retrofit: Retrofit): BookingApi = retrofit.create(BookingApi::class.java)
+
+    @Provides
+    fun provideChatApi(retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
 }
