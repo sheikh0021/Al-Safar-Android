@@ -11,7 +11,8 @@ interface AuthRepository {
         password: String,
         firstName: String,
         lastName: String,
-        phoneNumber: String?
+        phoneNumber: String?,
+        role: String
     ): Result<User>
     suspend fun logout()
     fun getCurrentUser(): Flow<User?>

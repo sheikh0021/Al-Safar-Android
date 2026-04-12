@@ -27,6 +27,7 @@ class AuthRepositoryImpl(
                 preferencesManager.saveAccessToken(loginResponse.access)
                 preferencesManager.saveRefreshToken(loginResponse.refresh)
                 preferencesManager.saveUserId(loginResponse.user.id.toString())
+                preferencesManager.saveUserRole(loginResponse.user.role)
                 preferencesManager.setLoggedIn(true)
 
                 val user = loginResponse.user.toDomain()
@@ -46,7 +47,8 @@ class AuthRepositoryImpl(
         password: String,
         firstName: String,
         lastName: String,
-        phoneNumber: String?
+        phoneNumber: String?,
+        role: String
     ): Result<User> {
         return try {
             val response = authApi.signup(
@@ -56,7 +58,8 @@ class AuthRepositoryImpl(
                     password = password,
                     firstName = firstName,
                     lastName = lastName,
-                    phoneNumber = phoneNumber
+                    phoneNumber = phoneNumber,
+                    role = role
                 )
             )
             if (response.isSuccessful && response.body() != null) {
@@ -64,6 +67,7 @@ class AuthRepositoryImpl(
                 preferencesManager.saveAccessToken(loginResponse.access)
                 preferencesManager.saveRefreshToken(loginResponse.refresh)
                 preferencesManager.saveUserId(loginResponse.user.id.toString())
+                preferencesManager.saveUserRole(loginResponse.user.role)
                 preferencesManager.setLoggedIn(true)
 
                 val user = loginResponse.user.toDomain()

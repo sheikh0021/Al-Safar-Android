@@ -23,11 +23,12 @@ class SignupViewModel @Inject constructor(
         password: String,
         firstName: String,
         lastName: String,
-        phoneNumber: String?
+        phoneNumber: String?,
+        role: String = "traveler"
     ) {
         viewModelScope.launch {
             _uiState.value = SignupUiState.Loading
-            signupUseCase(email, password, firstName, lastName, phoneNumber)
+            signupUseCase(email, password, firstName, lastName, phoneNumber, role)
                 .onSuccess { _uiState.value = SignupUiState.Success(it) }
                 .onFailure { _uiState.value = SignupUiState.Error(it.message ?: "Signup failed") }
         }

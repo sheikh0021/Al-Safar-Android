@@ -102,4 +102,12 @@ object RepositoryModule {
     ): ChatRepository{
         return ChatRepositoryImpl(chatApi)
     }
+
+    @Provides
+    @Singleton
+    fun provideGuideServiceRepository(
+        guideServiceApi: GuideServiceApi
+    ): GuideServiceRepository {
+        return GuideServiceRepositoryImpl(guideServiceApi)
+    }
 }

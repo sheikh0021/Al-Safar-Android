@@ -7,5 +7,6 @@ data class User(
     val firstName: String,
     val lastName: String,
     val phoneNumber: String?,
-    val profileImageUrl: String?
+    val profileImageUrl: String?,
+    val role: String = "traveler"
 )

@@ -2,6 +2,7 @@ package com.application.al_safar.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,8 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +59,7 @@ fun SignupScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    var selectedRole by remember { mutableStateOf("traveler") }
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
@@ -84,7 +88,25 @@ fun SignupScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        ) {Text(
+            text = "I am registering as: ",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.align(Alignment.Start)
+        )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                FilterChip(
+                    selected = selectedRole == "traveler",
+                    onClick = { selectedRole = "traveler"},
+                    label = { Text("🕋 Traveler")}
+                )
+                FilterChip(
+                    selected = selectedRole == "local_guide",
+                    onClick = {selectedRole = "local_guide"},
+                    label = {Text("🧭 Local Guide")}
+                )
+            }
             OutlinedTextField(
                 value = firstName,
                 onValueChange = { firstName = it },
@@ -164,7 +186,8 @@ fun SignupScreen(
                         password = password,
                         firstName = firstName,
                         lastName = lastName,
-                        phoneNumber = phoneNumber.ifBlank { null }
+                        phoneNumber = phoneNumber.ifBlank { null },
+                        role = selectedRole
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),

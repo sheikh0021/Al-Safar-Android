@@ -32,6 +32,7 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val isAuthenticated by viewModel.isAuthenticated.collectAsState()
+    val userRole by viewModel.userRole.collectAsState()
 
     LaunchedEffect(Unit) {
         delay(1800)
@@ -40,11 +41,21 @@ fun SplashScreen(
 
     LaunchedEffect(isAuthenticated) {
         when (isAuthenticated) {
-            true -> navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Splash.route) { inclusive = true }
+            true -> {
+                if (userRole == "local_guide") {
+                navController.navigate(Screen.GuideDashboard.route){
+                    popUpTo(Screen.Splash.route) {inclusive = true}
+                }
+                } else {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
             }
-            false -> navController.navigate(Screen.Language.route) {
-                popUpTo(Screen.Splash.route) { inclusive = true }
+            false -> {
+                navController.navigate(Screen.Language.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
             }
             null -> Unit
         }
