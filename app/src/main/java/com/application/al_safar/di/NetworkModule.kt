@@ -81,4 +81,8 @@ object NetworkModule {
 
     @Provides
     fun provideChatApi(retrofit: Retrofit): ChatApi = retrofit.create(ChatApi::class.java)
+
+    @Provides
+    fun provideGuideServiceApi(retrofit: Retrofit): GuideServiceApi = retrofit.create(
+        GuideServiceApi::class.java)
 }

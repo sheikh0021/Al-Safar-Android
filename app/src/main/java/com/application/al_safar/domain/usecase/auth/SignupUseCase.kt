@@ -10,8 +10,9 @@ class SignupUseCase @Inject constructor(private val repository: AuthRepository) 
         password: String,
         firstName: String,
         lastName: String,
-        phoneNumber: String?
+        phoneNumber: String?,
+        role: String = "traveler"
     ): Result<User> {
-        return repository.signup(email, password, firstName, lastName, phoneNumber)
+        return repository.signup(email, password, firstName, lastName, phoneNumber, role)
     }
 }

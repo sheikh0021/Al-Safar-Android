@@ -12,6 +12,8 @@ sealed class Screen(val route: String) {
     object Support : Screen("support")
     object Map : Screen("map")
     object AiChatbot : Screen("ai_chatbot")
+    object GuideDashboard : Screen("guide_dashboard")
+    object MyGuide : Screen("my_guide")
 
     object PackageDetail : Screen("package_detail/{packageId}") {
         fun createRoute(packageId: String) = "package_detail/$packageId"
@@ -35,5 +37,11 @@ sealed class Screen(val route: String) {
 
     object UmrahStepDetail : Screen("umrah_step_detail/{stepId}") {
         fun createRoute(stepId: String) = "umrah_step_detail/$stepId"
+    }
+    object TravelerChat : Screen("traveler_chat/{assignmentId}") {
+        fun createRoute(assignmentId: String) = "traveler_chat/$assignmentId"
+    }
+    object GuideChatDetail : Screen("guide_chat_detail/{assignmentId}"){
+        fun createRoute(assignmentId: String) = "guide_chat_detail/$assignmentId"
     }
 }

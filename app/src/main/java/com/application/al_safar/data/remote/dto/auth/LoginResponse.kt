@@ -14,5 +14,6 @@ data class UserDto(
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,
     @SerializedName("phone_number") val phoneNumber: String?,
-    @SerializedName("profile_picture") val profileImageUrl: String?
+    @SerializedName("profile_picture") val profileImageUrl: String?,
+    val role: String
 )

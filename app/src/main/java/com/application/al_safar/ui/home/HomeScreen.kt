@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Person4
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,6 +58,7 @@ fun HomeScreen(
     onNavigateToTripDashboard: () -> Unit,
     onNavigateToSupport: () -> Unit,
     onNavigateToAiChatbot: () -> Unit,
+    onNavigateToMyGuide: () -> Unit,
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -101,6 +103,11 @@ fun HomeScreen(
                         onClick = onNavigateToAiChatbot
                     ) {
                         Icon(Icons.Default.Chat, contentDescription = "AI Chatbot")
+                    }
+                    IconButton(
+                        onClick = onNavigateToMyGuide
+                    ) {
+                        Icon(Icons.Default.Person4, contentDescription = "My Guide")
                     }
                     IconButton(onClick = {viewModel.logout()}) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
