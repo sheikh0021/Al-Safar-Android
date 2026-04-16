@@ -13,11 +13,11 @@ private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getD
 private val gson = Gson()
 
 fun GroupDto.toDomain(): Group = Group(
-    id = id,
+    id = id.toString(),
     name = name,
-    leaderId = leaderId,
-    memberIds = members.map { it.id },
-    createdAt = runCatching { isoFormat.parse(createdAt) ?: Date() }.getOrDefault(Date())
+    leaderId = leader_id?.toString() ?: "",
+    memberIds = members.map { it.id.toString() },
+    createdAt = runCatching { isoFormat.parse(created_at) ?: Date() }.getOrDefault(Date())
 )
 
 fun GroupEntity.toDomain(): Group {

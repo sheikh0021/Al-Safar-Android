@@ -2,6 +2,7 @@ package com.application.al_safar.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +39,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
@@ -46,6 +49,7 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf("traveler") }
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -88,6 +92,29 @@ fun LoginScreen(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             modifier = Modifier.align(Alignment.Start)
         )
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "I am a: ",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.align(Alignment.Start)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.align(Alignment.Start)
+        ) {
+            FilterChip(
+                selected = selectedRole == "traveler",
+                onClick = {selectedRole = "traveler"},
+                label = {Text("🕋 Traveler")}
+            )
+            FilterChip(
+                selected = selectedRole == "local_guide",
+                onClick = {selectedRole = "local_guide"},
+                label = {Text("🧭 Local Guide")}
+
+            )
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 

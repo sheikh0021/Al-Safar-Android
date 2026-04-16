@@ -1,6 +1,9 @@
 package com.application.al_safar.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -23,12 +26,18 @@ import com.application.al_safar.ui.home.HomeScreen
 import com.application.al_safar.ui.language.LanguageScreen
 import com.application.al_safar.ui.map.MapScreen
 import com.application.al_safar.ui.packagedetail.PackageDetailScreen
+import com.application.al_safar.ui.session.SessionViewModel
 import com.application.al_safar.ui.splash.SplashScreen
 import com.application.al_safar.ui.support.SupportScreen
 import com.application.al_safar.ui.trip.TripDashboardScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+
+    val sessionViewModel: SessionViewModel = hiltViewModel()
+    val myUserId by sessionViewModel.userId.collectAsState()
+    val guideName by sessionViewModel.userName.collectAsState()
+
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
@@ -44,9 +53,10 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = { role ->
+                    sessionViewModel.loadSession()
                     if (role == "local_guide") {
                         navController.navigate(Screen.GuideDashboard.route) {
-                            popUpTo(Screen.Login.route) {inclusive = true}
+                            popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     } else {
                         navController.navigate(Screen.Home.route) {
@@ -58,49 +68,18 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Screen.GuideDashboard.route) {
-            GuideDashboardScreen(
-                navController = navController,
-                guideName = "Guide",
-                myUserId = 0
-            )
-        }
-
-        composable(Screen.MyGuide.route) {
-            MyGuideScreen(navController = navController)
-        }
-
-        composable(route = Screen.TravelerChat.route, arguments = listOf(navArgument("assignmentId") {type =
-            NavType.StringType})
-        ) { backStackEntry ->
-            GuideChatScreen(
-                assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
-                isGuide = false,
-                myUserId = 0,
-                otherPersonName = "Your Guide",
-                navController = navController
-            )
-        }
-
-        composable(
-            route = Screen.GuideChatDetail.route,
-            arguments = listOf(navArgument("assignmentId") {type = NavType.StringType})
-        ) { backStackEntry ->
-            GuideChatScreen(
-                assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
-                isGuide = true,
-                myUserId = 0,
-                otherPersonName = "Traveler",
-                navController = navController
-            )
-
-        }
-
         composable(Screen.Signup.route) {
             SignupScreen(
-                onSignupSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+                onSignupSuccess = { role ->
+                    sessionViewModel.loadSession()
+                    if (role == "local_guide") {
+                        navController.navigate(Screen.GuideDashboard.route){
+                            popUpTo(Screen.Login.route) {inclusive = true}
+                        }
+                    } else {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) {inclusive = true}
+                        }
                     }
                 },
                 onNavigateToLogin = { navController.popBackStack() }
@@ -113,13 +92,56 @@ fun NavGraph(navController: NavHostController) {
                 onNavigateToUmrahGuide = { navController.navigate(Screen.UmrahGuide.route) },
                 onNavigateToTripDashboard = { navController.navigate(Screen.TripDashboard.route) },
                 onNavigateToSupport = { navController.navigate(Screen.Support.route) },
-                onNavigateToAiChatbot = {navController.navigate(Screen.AiChatbot.route)},
-                onNavigateToMyGuide = {navController.navigate(Screen.MyGuide.route)},
+                onNavigateToAiChatbot = { navController.navigate(Screen.AiChatbot.route) },
+                onNavigateToMyGuide = { navController.navigate(Screen.MyGuide.route) },
                 onLogout = {
-                    navController.navigate(Screen.Login.route){
-                        popUpTo(Screen.Home.route) {inclusive = true}
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Screen.GuideDashboard.route) {
+            GuideDashboardScreen(
+                navController = navController,
+                guideName = guideName,
+                myUserId = myUserId,
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.GuideDashboard.route) {inclusive = true}
+                    }
+                }
+            )
+        }
+
+        composable(Screen.MyGuide.route) {
+            MyGuideScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.TravelerChat.route,
+            arguments = listOf(navArgument("assignmentId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            GuideChatScreen(
+                assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
+                isGuide = false,
+                myUserId = myUserId,
+                otherPersonName = "Your Guide",
+                navController = navController
+            )
+        }
+
+        composable(
+            route = Screen.GuideChatDetail.route,
+            arguments = listOf(navArgument("assignmentId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            GuideChatScreen(
+                assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
+                isGuide = true,
+                myUserId = myUserId,
+                otherPersonName = "Traveler",
+                navController = navController
             )
         }
 
@@ -203,9 +225,11 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Support.route) {
             SupportScreen(navController = navController)
         }
+
         composable(Screen.Map.route) {
             MapScreen()
         }
+
         composable(Screen.AiChatbot.route) {
             AiChatbotScreen(navController = navController)
         }

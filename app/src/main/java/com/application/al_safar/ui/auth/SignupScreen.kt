@@ -48,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun SignupScreen(
     viewModel: SignupViewModel = hiltViewModel(),
-    onSignupSuccess: () -> Unit,
+    onSignupSuccess: (role:String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -64,7 +64,8 @@ fun SignupScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is SignupUiState.Success) {
-            onSignupSuccess()
+            val role = (uiState as SignupUiState.Success).user.role
+            onSignupSuccess(role)
         }
     }
 

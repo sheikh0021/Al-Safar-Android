@@ -5,12 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.application.al_safar.domain.model.GuideMessage
 import com.application.al_safar.domain.usecase.guide.GetMessagesUseCase
 import com.application.al_safar.domain.usecase.guide.SendMessageUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@HiltViewModel
 class GuideChatViewModel @Inject constructor(
   private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase

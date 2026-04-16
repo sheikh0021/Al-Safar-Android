@@ -12,7 +12,8 @@ fun UserDto.toDomain(): User {
         firstName = firstName,
         lastName = lastName,
         phoneNumber = phoneNumber,
-        profileImageUrl = profileImageUrl
+        profileImageUrl = profileImageUrl,
+        role = role
     )
 }
 
