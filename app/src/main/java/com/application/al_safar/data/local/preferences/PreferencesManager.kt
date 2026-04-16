@@ -22,6 +22,7 @@ class PreferencesManager(private val context: Context) {
         private val FCM_TOKEN_KEY = stringPreferencesKey("fcm_token")
         private val LANGUAGE_KEY = stringPreferencesKey("language")
         private val USER_ROLE_KEY = stringPreferencesKey("user_role")
+        private val USER_NAME_KEY = stringPreferencesKey("user_name")
     }
 
     val accessToken: Flow<String?> = context.dataStore.data.map { it[ACCESS_TOKEN_KEY] }
@@ -31,6 +32,7 @@ class PreferencesManager(private val context: Context) {
     val fcmToken: Flow<String?> = context.dataStore.data.map { it[FCM_TOKEN_KEY] }
     val language: Flow<String> = context.dataStore.data.map { it[LANGUAGE_KEY] ?: "en" }
     val userRole: Flow<String> = context.dataStore.data.map { it[USER_ROLE_KEY] ?: "traveler" }
+    val userName: Flow<String> = context.dataStore.data.map { it[USER_NAME_KEY] ?: "" }
 
     suspend fun getAccessToken(): String? = accessToken.first()
     suspend fun isLoggedIn(): Boolean = isLoggedIn.first()
@@ -61,6 +63,10 @@ class PreferencesManager(private val context: Context) {
     }
     suspend fun saveUserRole(role: String){
         context.dataStore.edit { it[USER_ROLE_KEY] = role }
+    }
+
+    suspend fun saveUserName(name: String) {
+        context.dataStore.edit { it[USER_NAME_KEY] = name }
     }
 
     suspend fun clearAll() {

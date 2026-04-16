@@ -2,18 +2,18 @@ package com.application.al_safar.data.remote.dto.group
 
 
 data class GroupDto(
-    val id: String,
+    val id: Int,
     val name: String,
-    val leaderId: String,
+    val leader_id: Int?,
     val members: List<GroupMemberDto>,
-    val createdAt: String
+    val created_at: String
 )
 
 data class GroupMemberDto(
-    val id: String,
+    val id: Int,
     val email: String,
-    val firstName: String,
-    val lastName: String
+    val first_name: String,
+    val last_name: String
 )
 
 data class CreateGroupRequest(
