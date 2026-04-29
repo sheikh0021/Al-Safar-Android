@@ -4,6 +4,7 @@ import com.application.al_safar.BuildConfig
 import com.application.al_safar.data.remote.api.*
 import com.application.al_safar.data.remote.interceptors.AuthInterceptor
 import com.application.al_safar.util.ApiConfig
+import com.application.al_safar.data.remote.api.NotificationApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -85,4 +86,8 @@ object NetworkModule {
     @Provides
     fun provideGuideServiceApi(retrofit: Retrofit): GuideServiceApi = retrofit.create(
         GuideServiceApi::class.java)
+
+    @Provides
+    fun provideNotificationApi(retrofit: Retrofit): NotificationApi = retrofit.create(
+        NotificationApi::class.java)
 }

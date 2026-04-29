@@ -26,13 +26,18 @@ import com.application.al_safar.ui.home.HomeScreen
 import com.application.al_safar.ui.language.LanguageScreen
 import com.application.al_safar.ui.map.MapScreen
 import com.application.al_safar.ui.packagedetail.PackageDetailScreen
+import com.application.al_safar.ui.notifications.NotificationPreferencesScreen
+import com.application.al_safar.ui.notifications.NotificationCenterScreen
 import com.application.al_safar.ui.session.SessionViewModel
 import com.application.al_safar.ui.splash.SplashScreen
 import com.application.al_safar.ui.support.SupportScreen
 import com.application.al_safar.ui.trip.TripDashboardScreen
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    startDestination: String? = null
+) {
 
     val sessionViewModel: SessionViewModel = hiltViewModel()
     val myUserId by sessionViewModel.userId.collectAsState()
@@ -40,7 +45,7 @@ fun NavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
+        startDestination = startDestination ?: Screen.Splash.route
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(navController = navController)
@@ -48,6 +53,14 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.Language.route) {
             LanguageScreen(navController = navController)
+        }
+
+        composable(Screen.NotificationCenter.route) {
+            NotificationCenterScreen(navController = navController)
+        }
+
+        composable(Screen.NotificationPreferences.route) {
+            NotificationPreferencesScreen(navController = navController)
         }
 
         composable(Screen.Login.route) {

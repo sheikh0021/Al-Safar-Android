@@ -14,10 +14,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val targetScreen = intent.getStringExtra("target_screen")
+        val notificationData = intent.getStringExtra("notification_data")
+
         setContent {
             AlSafarTheme {
                 val navController = rememberNavController()
-                NavGraph(navController = navController)
+                NavGraph(
+                    navController = navController,
+                    startDestination = targetScreen
+                )
             }
         }
     }
