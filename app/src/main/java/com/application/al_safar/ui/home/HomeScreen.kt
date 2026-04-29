@@ -20,7 +20,10 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person4
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,12 +51,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.application.al_safar.domain.model.Package
 import com.application.al_safar.ui.navigation.Screen
+import com.application.al_safar.ui.notifications.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
     onNavigateToUmrahGuide: () -> Unit,
     onNavigateToTripDashboard: () -> Unit,
     onNavigateToSupport: () -> Unit,
@@ -62,6 +67,7 @@ fun HomeScreen(
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val unreadCount by notificationViewModel.unreadCount.collectAsState()
     var selectedFilter by remember { mutableStateOf<String?>(null) }
     val logoutComplete by viewModel.logoutComplete.collectAsState()
 
@@ -90,6 +96,17 @@ fun HomeScreen(
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 actions = {
+                    IconButton(onClick = { navController.navigate(Screen.NotificationCenter.route) }) {
+                        BadgedBox(
+                            badge = {
+                                if (unreadCount > 0) {
+                                    Badge { Text(unreadCount.toString()) }
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Default.Notifications, "Notifications")
+                        }
+                    }
                     IconButton(onClick = onNavigateToUmrahGuide) {
                         Icon(Icons.Default.Book, "Umrah Guide")
                     }

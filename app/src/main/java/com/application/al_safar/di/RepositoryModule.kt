@@ -110,4 +110,14 @@ object RepositoryModule {
     ): GuideServiceRepository {
         return GuideServiceRepositoryImpl(guideServiceApi)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(
+        dao: NotificationDao,
+        api: NotificationApi,
+        preferencesManager: PreferencesManager
+    ): NotificationRepository {
+        return NotificationRepositoryImpl(dao, api, preferencesManager)
+    }
 }

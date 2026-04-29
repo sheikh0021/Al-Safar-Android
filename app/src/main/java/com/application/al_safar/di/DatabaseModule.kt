@@ -20,7 +20,8 @@ object DatabaseModule {
             context,
             AlSafarDatabase::class.java,
             "al_safar_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
@@ -40,4 +41,7 @@ object DatabaseModule {
 
     @Provides
     fun provideGroupDao(database: AlSafarDatabase) = database.groupDao()
+
+    @Provides
+    fun provideNotificationDao(database: AlSafarDatabase) = database.notificationDao()
 }
