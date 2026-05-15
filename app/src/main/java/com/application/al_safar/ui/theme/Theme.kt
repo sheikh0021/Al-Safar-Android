@@ -13,62 +13,34 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val LightColorScheme = lightColorScheme(
-    primary = AlSafarGreen,
-    onPrimary = AlSafarOnPrimary,
-    primaryContainer = AlSafarPrimaryContainer,
-    onPrimaryContainer = AlSafarOnPrimaryContainer,
-    secondary = AlSafarTeal,
-    onSecondary = Color.White,
-    secondaryContainer = AlSafarSecondaryContainer,
-    onSecondaryContainer = AlSafarOnSecondaryContainer,
-    tertiary = AlSafarGold,
-    onTertiary = Color.White,
-    background = AlSafarSurface,
-    onBackground = AlSafarOnSurface,
-    surface = Color.White,
-    onSurface = AlSafarOnSurface,
-    error = Color(0xFFBA1A1A),
-    onError = Color.White
-)
-
-private val DarkColorScheme = darkColorScheme(
-    primary = AlSafarGreenDarkTheme,
-    onPrimary = AlSafarOnPrimaryContainer,
-    primaryContainer = AlSafarGreenDark,
-    onPrimaryContainer = AlSafarPrimaryContainer,
-    secondary = AlSafarTealLight,
-    onSecondary = Color.Black,
-    tertiary = AlSafarGoldDarkTheme,
-    onTertiary = Color.Black,
-    background = AlSafarSurfaceDark,
-    onBackground = Color.White,
-    surface = Color(0xFF2C2C2E),
-    onSurface = Color.White,
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005)
+private val AlSafarScheme = darkColorScheme(
+    primary = Emerald700,
+    onPrimary = TextPrimaryDarkBg,
+    secondary = Gold500,
+    onSecondary = TextPrimaryLightCard,
+    background = Emerald900,
+    onBackground = TextPrimaryDarkBg,
+    surface = Emerald700,
+    onSurface = TextPrimaryDarkBg,
+    surfaceVariant = CardLight,
+    onSurfaceVariant = TextPrimaryLightCard
 )
 
 @Composable
-fun AlSafarTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
+fun AlSafarTheme(content: @Composable () -> Unit) {
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as? Activity)?.window
-            window?.statusBarColor = colorScheme.primary.toArgb()
+            window?.statusBarColor = Emerald900.toArgb()
             window?.let {
-                WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = !darkTheme
+                WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = false
             }
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = AlSafarScheme,
         typography = Typography,
         content = content
     )
