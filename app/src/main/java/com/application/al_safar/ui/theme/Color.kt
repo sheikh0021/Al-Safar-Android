@@ -30,3 +30,14 @@ val AlSafarOnSecondaryContainer = Color(0xFF0D1F16)
 // Dark theme
 val AlSafarGreenDarkTheme = Color(0xFF72D49A)
 val AlSafarGoldDarkTheme = Color(0xFFE8C55A)
+val Emerald900 = Color(0xFF0F3D2E)  // main dark background
+val Emerald700 = Color(0xFF1B5E3E)  // section/cards on dark
+val Gold500 = Color(0xFFD4AF37)     // accent
+val CardLight = Color(0xFFF8F9F7)   // main card background
+val Mint100 = Color(0xFFE7F5EC)     // chip/light surface
+
+val TextPrimaryDarkBg = Color(0xFFF2F5F3)
+val TextSecondaryDarkBg = Color(0xFFB8C8C0)
+val TextPrimaryLightCard = Color(0xFF0D1F18)
+val TextSecondaryLightCard = Color(0xFF5E7268)
+val DividerSoft = Color(0x223B5A4B)
