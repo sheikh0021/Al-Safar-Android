@@ -1,5 +1,6 @@
 package com.application.al_safar.ui.home
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,8 +72,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.application.al_safar.R
 import com.application.al_safar.domain.model.Package
+import com.application.al_safar.ui.components.AlSafarBottomNav
 import com.application.al_safar.ui.navigation.Screen
 import com.application.al_safar.ui.notifications.NotificationViewModel
 import com.application.al_safar.ui.theme.CardLight
@@ -83,7 +86,7 @@ import com.application.al_safar.ui.theme.TextPrimaryDarkBg
 import com.application.al_safar.ui.theme.TextPrimaryLightCard
 import com.application.al_safar.ui.theme.TextSecondaryLightCard
 import com.application.al_safar.ui.theme.Typography
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -102,51 +105,59 @@ fun HomeScreen(
     var selectedFilter by remember { mutableStateOf<String?>(null) }
     val logoutComplete by viewModel.logoutComplete.collectAsState()
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: "home"
+
     LaunchedEffect(logoutComplete) {
         if (logoutComplete){
             onLogout()
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize().background(CardLight)
-    ){
-        when (val state = uiState) {
-            is HomeUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ){
-                    CircularProgressIndicator(color = Emerald700)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = CardLight,
+        bottomBar = {
+            AlSafarBottomNav(
+                currentRoute = currentRoute,
+                onNavigate = { route ->
+                    if (route != currentRoute) {
+                        navController.navigate(route) {
+                            popUpTo("home") {saveState = true}
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 }
-            }
-
-            is HomeUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(24.dp),
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = state.message,
-                        color = TextPrimaryLightCard,
-                        style = Typography.bodyLarge,
-                        textAlign = TextAlign.Center
+            )
+        }
+    ) {  innerPadding ->
+        Box(
+            modifier = Modifier.fillMaxSize().padding(bottom = 0.dp)
+        ){
+            when (val state = uiState) {
+                is  HomeUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(color = Emerald700)
+                    }
+                }
+                is HomeUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center){
+                        Text(text = state.message, color = TextPrimaryLightCard, style = Typography.bodyLarge, textAlign = TextAlign.Center)
+                    }
+                }
+                is HomeUiState.Success -> {
+                    HomeContent(
+                        navController = navController,
+                        unreadCount = unreadCount,
+                        selectedFilter = selectedFilter,
+                        packages = state.packages,
+                        onFilterSelected = {type ->
+                            selectedFilter = type
+                            viewModel.loadPackages(type)
+                        }
                     )
                 }
-            }
-
-            is HomeUiState.Success -> {
-                HomeContent(
-                    navController = navController,
-                    unreadCount = unreadCount,
-                    selectedFilter = selectedFilter,
-                    packages = state.packages,
-                    onFilterSelected = { type ->
-                        selectedFilter = type
-                        viewModel.loadPackages(type)
-                    }
-
-                )
             }
         }
     }
@@ -163,7 +174,7 @@ private fun HomeContent(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 110.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
