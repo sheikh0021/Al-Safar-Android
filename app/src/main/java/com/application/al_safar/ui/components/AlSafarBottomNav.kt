@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.application.al_safar.ui.navigation.Screen
 import com.application.al_safar.ui.theme.Emerald700
 
 
@@ -51,21 +52,21 @@ fun AlSafarBottomNav(
         ) {
             NavItem(
                 label = "Home",
-                icon = if (currentRoute == "home") Icons.Default.Home else Icons.Outlined.Home,
-                isSelected = currentRoute == "home"
-            ){ onNavigate("home")}
+                icon = if (currentRoute == Screen.Home.route) Icons.Default.Home else Icons.Outlined.Home,
+                isSelected = currentRoute == Screen.Home.route
+            ){ onNavigate(Screen.Home.route)}
 
             NavItem(
                 label = "Bookings",
                 icon = Icons.Default.Assignment,
-                isSelected = currentRoute == "bookings"
-            ) {onNavigate("bookings") }
+                isSelected = currentRoute == Screen.TripDashboard.route
+            ) {onNavigate(Screen.TripDashboard.route) }
 
             NavItem(
                 label = "Support",
                 icon = Icons.Default.QuestionAnswer,
-                isSelected = currentRoute == "support"
-            ) { onNavigate("support")}
+                isSelected = currentRoute == Screen.AiChatbot.route
+            ) { onNavigate(Screen.AiChatbot.route)}
 
             NavItem(
                 label = "Profile",
