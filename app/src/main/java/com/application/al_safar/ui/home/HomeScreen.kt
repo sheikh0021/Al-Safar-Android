@@ -123,7 +123,7 @@ fun HomeScreen(
                 onNavigate = { route ->
                     if (route != currentRoute) {
                         navController.navigate(route) {
-                            popUpTo("home") {saveState = true}
+                            popUpTo(Screen.Home.route) {saveState = true}
                             launchSingleTop = true
                             restoreState = true
                         }
