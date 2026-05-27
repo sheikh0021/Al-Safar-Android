@@ -14,6 +14,7 @@ import com.application.al_safar.ui.auth.SignupScreen
 import com.application.al_safar.ui.booking.BookingDateGroupScreen
 import com.application.al_safar.ui.booking.ConfirmationScreen
 import com.application.al_safar.ui.booking.PaymentScreen
+import com.application.al_safar.ui.booking.TravelerSummaryScreen
 import com.application.al_safar.ui.booking.UploadDocumentsScreen
 import com.application.al_safar.ui.chatbot.AiChatbotScreen
 import com.application.al_safar.ui.guide.DuaCollectionScreen
@@ -245,6 +246,14 @@ fun NavGraph(
 
         composable(Screen.AiChatbot.route) {
             AiChatbotScreen(navController = navController)
+        }
+        composable(route = Screen.TravelerSummary.route,
+            arguments = listOf(navArgument("bookingId"){type = NavType.StringType})
+        ) { backStackEntry ->
+            TravelerSummaryScreen(
+                bookingId = backStackEntry.arguments?.getString("bookingId") ?: "",
+                navController = navController
+            )
         }
     }
 }
