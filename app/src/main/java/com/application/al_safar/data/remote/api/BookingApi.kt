@@ -6,6 +6,7 @@ import com.application.al_safar.data.remote.dto.booking.ConfirmPaymentRequest
 import com.application.al_safar.data.remote.dto.booking.CreateBookingRequest
 import com.application.al_safar.data.remote.dto.booking.PackageDto
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -36,7 +37,7 @@ interface BookingApi {
     @POST("booking/bookings/{id}/upload_document/")
     suspend fun uploadDocument(
         @Path("id") bookingId: Int,
-        @Part("document_type") documentType: String,
+        @Part("document_type") documentType: RequestBody,
         @Part file: MultipartBody.Part
     ): Response<BookingDocumentDto>
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class BookingRepositoryImpl(
@@ -82,14 +83,44 @@ class BookingRepositoryImpl(
         documentType: String,
         file: File
     ): Result<BookingDocument> = runCatching {
-        val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val filePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        val response = bookingApi.uploadDocument(bookingId, documentType, filePart)
+        val cleanDocumentType = documentType.trim().lowercase()
+
+        val allowedTypes = setOf("passport", "visa", "photo", "vaccine", "other")
+        require(cleanDocumentType in allowedTypes) {
+            "Invalid document type: $documentType"
+        }
+
+        val documentTypePart = cleanDocumentType
+            .toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val mediaType = when (file.extension.lowercase()) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "pdf" -> "application/pdf"
+            else -> "application/octet-stream"
+        }.toMediaTypeOrNull()
+
+        val requestFile = file.asRequestBody(mediaType)
+
+        val filePart = MultipartBody.Part.createFormData(
+            name = "file",
+            filename = file.name,
+            body = requestFile
+        )
+
+        val response = bookingApi.uploadDocument(
+            bookingId = bookingId,
+            documentType = documentTypePart,
+            file = filePart
+        )
+
         if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            throw Exception("Failed to upload document: ${response.message()}")
+            val errorBody = response.errorBody()?.string()
+            throw Exception("Failed to upload document: ${errorBody ?: response.message()} ")
         }
+
     }
 
     override suspend fun confirmPayment(bookingId: Int, transactionId: String): Result<Booking> =
