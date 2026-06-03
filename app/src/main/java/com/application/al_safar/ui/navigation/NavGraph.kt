@@ -29,6 +29,7 @@ import com.application.al_safar.ui.map.MapScreen
 import com.application.al_safar.ui.packagedetail.PackageDetailScreen
 import com.application.al_safar.ui.notifications.NotificationPreferencesScreen
 import com.application.al_safar.ui.notifications.NotificationCenterScreen
+import com.application.al_safar.ui.profile.ProfileScreen
 import com.application.al_safar.ui.session.SessionViewModel
 import com.application.al_safar.ui.splash.SplashScreen
 import com.application.al_safar.ui.support.SupportScreen
@@ -255,5 +256,16 @@ fun NavGraph(
                 navController = navController
             )
         }
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                navController = navController,
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) {inclusive = true}
+                    }
+                }
+            )
+        }
+
     }
 }

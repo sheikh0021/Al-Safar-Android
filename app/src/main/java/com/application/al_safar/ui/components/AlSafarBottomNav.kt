@@ -71,8 +71,8 @@ fun AlSafarBottomNav(
             NavItem(
                 label = "Profile",
                 icon = Icons.Default.PersonOutline,
-                isSelected = currentRoute == "profile"
-            ) {onNavigate("profile") }
+                isSelected = currentRoute == Screen.Profile.route
+            ) {onNavigate(Screen.Profile.route) }
         }
     }
 
