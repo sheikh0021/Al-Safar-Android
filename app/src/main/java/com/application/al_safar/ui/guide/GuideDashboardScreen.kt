@@ -1,6 +1,8 @@
 package com.application.al_safar.ui.guide
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,27 +14,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,15 +45,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.application.al_safar.domain.model.GuideAssignment
+import com.application.al_safar.ui.components.GuideBottomNav
 import com.application.al_safar.ui.navigation.Screen
+import com.application.al_safar.ui.theme.Emerald700
+import com.application.al_safar.ui.theme.Emerald900
+import com.application.al_safar.ui.theme.Gold500
+import com.application.al_safar.ui.theme.Playfair
+import com.application.al_safar.ui.theme.Poppins
+import com.application.al_safar.ui.theme.ProfileCardDark
+import com.application.al_safar.ui.theme.ProfileDeepDark
+import com.application.al_safar.ui.theme.TextPrimaryDarkBg
+import com.application.al_safar.ui.theme.TextSecondaryDarkBg
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuideDashboardScreen(
     navController: NavController,
@@ -60,89 +74,116 @@ fun GuideDashboardScreen(
     viewModel: GuideDashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val selectedTab by viewModel.selectedTab.collectAsState()
     val logoutComplete by viewModel.logoutComplete.collectAsState()
-    var selectedTab by remember { mutableStateOf(0) }
-
-    val assignments = (uiState as? GuideDashboardUiState.Success)?.assignments ?: emptyList()
-    val totalUnread = assignments.sumOf { it.unreadCount }
 
     LaunchedEffect(logoutComplete) {
-        if (logoutComplete) {
-            onLogout()
-        }
+        if (logoutComplete) onLogout()
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("Guide Dashboard", fontWeight = FontWeight.Bold)
-                        if (guideName.isNotBlank()) {
-                            Text(
-                                text = "As-salamu Alaykum, $guideName",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                actions = {
-                    IconButton(onClick = { viewModel.logout() }) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
+        containerColor = ProfileDeepDark,
+        bottomBar = {
+            GuideBottomNav(
+                selectedTab = selectedTab,
+                unreadCount = viewModel.getTotalUnreadCount(),
+                onTabSelected = { tab ->
+                    if (tab is GuideTab.Profile) {
+                        navController.navigate(Screen.GuideProfile.route)
+                    } else {
+                        viewModel.selectTab(tab)
                     }
                 }
             )
-        },
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.People, contentDescription = "My Travelers") },
-                    label = { Text("My Travelers") }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            GuideDashboardHeader(
+                guideName = guideName,
+                onRefresh = { viewModel.loadTravelers() }
+            )
+
+            when (selectedTab) {
+                is GuideTab.Trips -> TripsTabContent(viewModel = viewModel)
+                is GuideTab.Chats -> ChatsTabContent(
+                    viewModel = viewModel,
+                    onChatClick = { assignment ->
+                        navController.navigate(
+                            Screen.GuideChatDetail.createRoute(assignment.id.toString())
+                        )
+                    }
                 )
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = {
-                        BadgedBox(
-                            badge = {
-                                if (totalUnread > 0) {
-                                    Badge { Text("$totalUnread") }
-                                }
-                            }
-                        ) {
-                            Icon(Icons.Default.Chat, contentDescription = "Chats")
-                        }
-                    },
-                    label = { Text("Chats") }
-                )
+                is GuideTab.Profile -> { }
             }
         }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            when (selectedTab) {
-                0 -> GuideTravelersTab(
-                    uiState = uiState,
-                    onChatClick = { assignment ->
-                        navController.navigate(
-                            Screen.GuideChatDetail.createRoute(assignment.id.toString())
-                        )
-                    }
+    }
+}
+
+@Composable
+private fun GuideDashboardHeader(
+    guideName: String,
+    onRefresh: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(ProfileDeepDark)
+            .statusBarsPadding()
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Gold500, CircleShape)
+                    .background(Emerald700),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Guide Avatar",
+                    tint = Gold500,
+                    modifier = Modifier.size(30.dp)
                 )
-                1 -> GuideChatsTab(
-                    assignments = assignments,
-                    onChatClick = { assignment ->
-                        navController.navigate(
-                            Screen.GuideChatDetail.createRoute(assignment.id.toString())
-                        )
-                    }
+            }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "As-salamu Alaykum",
+                    fontFamily = Poppins,
+                    fontSize = 12.sp,
+                    color = TextSecondaryDarkBg
+                )
+                Text(
+                    text = if (guideName.isNotBlank()) guideName else "Guide",
+                    fontFamily = Playfair,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = TextPrimaryDarkBg
+                )
+                Text(
+                    text = "Local Guide · Al-Safar",
+                    fontFamily = Poppins,
+                    fontSize = 11.sp,
+                    color = Gold500
+                )
+            }
+
+            IconButton(onClick = onRefresh) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Refresh",
+                    tint = TextSecondaryDarkBg
                 )
             }
         }
@@ -150,88 +191,202 @@ fun GuideDashboardScreen(
 }
 
 @Composable
-private fun GuideTravelersTab(
-    uiState: GuideDashboardUiState,
-    onChatClick: (GuideAssignment) -> Unit
-) {
-    when (uiState) {
-        is GuideDashboardUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-        is GuideDashboardUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = uiState.message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
+private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    val tripTabs = listOf("Ongoing", "Upcoming", "Completed")
+    var selectedTripTab by remember { mutableStateOf(0) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TabRow(
+            selectedTabIndex = selectedTripTab,
+            containerColor = ProfileDeepDark,
+            contentColor = Gold500,
+            indicator = { tabPositions ->
+                Box(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTripTab])
+                        .height(2.dp)
+                        .background(Gold500)
+                )
+            },
+            divider = {}
+        ) {
+            tripTabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTripTab == index,
+                    onClick = { selectedTripTab = index },
+                    text = {
+                        Text(
+                            text = title,
+                            fontFamily = Poppins,
+                            fontWeight = if (selectedTripTab == index) FontWeight.SemiBold else FontWeight.Normal,
+                            fontSize = 13.sp,
+                            color = if (selectedTripTab == index) Gold500 else TextSecondaryDarkBg
+                        )
+                    }
                 )
             }
         }
-        is GuideDashboardUiState.Success -> {
-            if (uiState.assignments.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        when (uiState) {
+            is GuideDashboardUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Gold500)
+                }
+            }
+            is GuideDashboardUiState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "No travelers assigned yet.",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            text = (uiState as GuideDashboardUiState.Error).message,
+                            fontFamily = Poppins,
+                            color = TextSecondaryDarkBg,
+                            fontSize = 14.sp
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "The admin will assign travelers to you once they book a package.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                            modifier = Modifier.padding(horizontal = 32.dp)
-                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.loadTravelers() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Emerald700)
+                        ) {
+                            Text("Retry", fontFamily = Poppins, color = TextPrimaryDarkBg)
+                        }
                     }
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(uiState.assignments) { assignment ->
-                        TravelerCard(
-                            assignment = assignment,
-                            onChatClick = { onChatClick(assignment) }
-                        )
-                    }
+            }
+            is GuideDashboardUiState.Success -> {
+                val trips = when (selectedTripTab) {
+                    0    -> viewModel.getOngoingTrips()
+                    1    -> viewModel.getUpcomingTrips()
+                    else -> viewModel.getCompletedTrips()
                 }
+                val emptyMessage = when (selectedTripTab) {
+                    0    -> "No ongoing trips right now."
+                    1    -> "No upcoming trips scheduled."
+                    else -> "No completed trips yet."
+                }
+                TripList(trips = trips, emptyMessage = emptyMessage)
             }
         }
     }
 }
 
 @Composable
-private fun GuideChatsTab(
-    assignments: List<GuideAssignment>,
-    onChatClick: (GuideAssignment) -> Unit
-) {
-    if (assignments.isEmpty()) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "No chats yet.",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "When a traveler sends you a message, it will appear here.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                    modifier = Modifier.padding(horizontal = 32.dp)
-                )
-            }
+private fun TripList(trips: List<GuideAssignment>, emptyMessage: String) {
+    if (trips.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = emptyMessage, fontFamily = Poppins, color = TextSecondaryDarkBg, fontSize = 14.sp)
         }
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(trips) { assignment ->
+                TripStatusCard(assignment = assignment)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TripStatusCard(assignment: GuideAssignment) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = ProfileCardDark
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = assignment.travelerName ?: "Traveler",
+                    fontFamily = Poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    color = TextPrimaryDarkBg
+                )
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = when (assignment.status.lowercase()) {
+                        "ongoing", "active"     -> Emerald700
+                        "completed", "done"     -> Color(0xFF2D5A27)
+                        else                    -> Color(0xFF4A3800)
+                    }
+                ) {
+                    Text(
+                        text = assignment.status.replaceFirstChar { it.uppercase() },
+                        fontFamily = Poppins,
+                        fontSize = 11.sp,
+                        color = when (assignment.status.lowercase()) {
+                            "ongoing", "active" -> TextPrimaryDarkBg
+                            "completed", "done" -> Color(0xFF90EE90)
+                            else                -> Gold500
+                        },
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Text(
+                text = assignment.packageTitle ?: "Package N/A",
+                fontFamily = Poppins,
+                fontSize = 13.sp,
+                color = Gold500
+            )
+            if (!assignment.travelDate.isNullOrBlank()) {
+                Text(
+                    text = "Travel Date: ${assignment.travelDate}",
+                    fontFamily = Poppins,
+                    fontSize = 12.sp,
+                    color = TextSecondaryDarkBg
+                )
+            }
+            if (!assignment.travelerEmail.isNullOrBlank()) {
+                Text(
+                    text = assignment.travelerEmail,
+                    fontFamily = Poppins,
+                    fontSize = 12.sp,
+                    color = TextSecondaryDarkBg
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChatsTabContent(
+    viewModel: GuideDashboardViewModel,
+    onChatClick: (GuideAssignment) -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val assignments = (uiState as? GuideDashboardUiState.Success)?.assignments ?: emptyList()
+
+    if (assignments.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "No traveler chats yet.", fontFamily = Poppins, color = TextSecondaryDarkBg, fontSize = 14.sp)
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(assignments) { assignment ->
                 ChatInboxCard(assignment = assignment, onClick = { onChatClick(assignment) })
@@ -241,57 +396,55 @@ private fun GuideChatsTab(
 }
 
 @Composable
-private fun TravelerCard(assignment: GuideAssignment, onChatClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                text = assignment.travelerName ?: "Traveler",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = assignment.travelerEmail ?: "",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
-            Text(text = "Package: ${assignment.packageTitle ?: "N/A"}")
-            Text(text = "Travel Date: ${assignment.travelDate ?: "N/A"}")
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = onChatClick, modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    imageVector = Icons.Default.Chat,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Text("  Open Chat")
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 private fun ChatInboxCard(assignment: GuideAssignment, onClick: () -> Unit) {
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(14.dp),
+        color = ProfileCardDark
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Box(
+                modifier = Modifier.size(42.dp).clip(CircleShape).background(Emerald700),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = assignment.travelerName?.firstOrNull()?.uppercase() ?: "T",
+                    fontFamily = Poppins,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Gold500
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = assignment.travelerName ?: "Traveler",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontFamily = Poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = TextPrimaryDarkBg
                 )
                 Text(
                     text = assignment.packageTitle ?: "",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    fontFamily = Poppins,
+                    fontSize = 12.sp,
+                    color = TextSecondaryDarkBg
                 )
             }
             if (assignment.unreadCount > 0) {
-                Badge { Text("${assignment.unreadCount}") }
+                Badge(containerColor = Gold500) {
+                    Text(text = "${assignment.unreadCount}", color = Emerald900, fontSize = 11.sp)
+                }
+            } else {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = TextSecondaryDarkBg,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
