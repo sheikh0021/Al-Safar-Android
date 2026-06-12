@@ -20,6 +20,7 @@ import com.application.al_safar.ui.chatbot.AiChatbotScreen
 import com.application.al_safar.ui.guide.DuaCollectionScreen
 import com.application.al_safar.ui.guide.GuideChatScreen
 import com.application.al_safar.ui.guide.GuideDashboardScreen
+import com.application.al_safar.ui.guide.GuideProfileScreen
 import com.application.al_safar.ui.guide.MyGuideScreen
 import com.application.al_safar.ui.guide.UmrahGuideScreen
 import com.application.al_safar.ui.guide.UmrahStepDetailScreen
@@ -128,6 +129,18 @@ fun NavGraph(
                     }
                 }
             )
+        }
+
+        composable(Screen.GuideProfile.route) {
+            GuideProfileScreen(
+                navController = navController,
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.GuideDashboard.route) {inclusive = true}
+                    }
+                }
+            )
+
         }
 
         composable(Screen.MyGuide.route) {

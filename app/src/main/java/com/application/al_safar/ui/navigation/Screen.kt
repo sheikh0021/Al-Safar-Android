@@ -17,6 +17,7 @@ sealed class Screen(val route: String) {
     object NotificationCenter : Screen("notification_center")
     object NotificationPreferences : Screen("notification_preferences")
     object Profile: Screen("profile")
+    object GuideProfile : Screen("guide_profile")
 
     object PackageDetail : Screen("package_detail/{packageId}") {
         fun createRoute(packageId: String) = "package_detail/$packageId"
