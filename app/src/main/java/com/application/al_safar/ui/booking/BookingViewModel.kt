@@ -88,10 +88,10 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-    fun confirmPayment(bookingId: Int, transactionId: String) {
+    fun confirmPayment(bookingId: Int, transactionId: String, paymentMethod: String = "cash") {
         viewModelScope.launch {
             _bookingState.value = BookingUiState.Loading
-            confirmPaymentUseCase(bookingId, transactionId)
+            confirmPaymentUseCase(bookingId, transactionId, paymentMethod)
                 .onSuccess { booking ->
                     _currentBooking.value = booking
                     _bookingState.value = BookingUiState.PaymentConfirmed

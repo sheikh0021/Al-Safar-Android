@@ -23,5 +23,5 @@ interface BookingRepository {
         documentType: String,
         file: File
     ): Result<BookingDocument>
-    suspend fun confirmPayment(bookingId: Int, transactionId: String): Result<Booking>
+    suspend fun confirmPayment(bookingId: Int, transactionId: String, paymentMethod: String): Result<Booking>
 }
