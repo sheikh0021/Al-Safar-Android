@@ -190,7 +190,8 @@ fun PaymentScreen(
                     val cashTransactionId = "CASH_${System.currentTimeMillis()}"
                     viewModel.confirmPayment(
                         bookingId = bookingId.toIntOrNull() ?: 0,
-                        transactionId = cashTransactionId
+                        transactionId = cashTransactionId,
+                        paymentMethod = "cash"
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),

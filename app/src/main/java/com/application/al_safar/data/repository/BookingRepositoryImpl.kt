@@ -123,9 +123,9 @@ class BookingRepositoryImpl(
 
     }
 
-    override suspend fun confirmPayment(bookingId: Int, transactionId: String): Result<Booking> =
+    override suspend fun confirmPayment(bookingId: Int, transactionId: String, paymentMethod: String): Result<Booking> =
         runCatching {
-            val response = bookingApi.confirmPayment(bookingId, ConfirmPaymentRequest(transactionId))
+            val response = bookingApi.confirmPayment(bookingId, ConfirmPaymentRequest(transactionId, payment_method = paymentMethod))
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!.toDomain()
             } else {
