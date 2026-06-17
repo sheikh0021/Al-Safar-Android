@@ -38,4 +38,9 @@ interface GuideServiceApi {
         @Path("assignmentId") assignmentId: Int,
         @Body request: SendMessageRequest
     ): Response<GuideMessageDto>
+
+    @POST("guide-service/assignments/{assignmentId}/accept/")
+    suspend fun acceptAssignment(
+        @Path("assignmentId") assignmentId: Int
+    ): Response<GuideAssignmentDto>
 }

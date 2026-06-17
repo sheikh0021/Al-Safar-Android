@@ -10,7 +10,9 @@ data class GuideAssignmentDto(
     val package_title: String?,
     val status: String,
     val assigned_at: String,
-    val unread_count: Int
+    val unread_count: Int,
+    val traveler_passport_url: String? = null,
+    val traveler_photo_url: String? = null
 )
 
 data class LocalGuideDto(

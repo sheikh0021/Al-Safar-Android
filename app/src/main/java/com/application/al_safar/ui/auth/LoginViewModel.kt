@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.al_safar.domain.model.User
 import com.application.al_safar.domain.usecase.auth.LoginUseCase
+import com.application.al_safar.domain.usecase.notification.RegisterFcmTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val registerFcmTokenUseCase: RegisterFcmTokenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -22,8 +24,13 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
             loginUseCase(username, password)
-                .onSuccess { _uiState.value = LoginUiState.Success(it) }
-                .onFailure { _uiState.value = LoginUiState.Error(it.message ?: "Login failed") }
+                .onSuccess { user ->
+                    launch { registerFcmTokenUseCase() }
+                    _uiState.value = LoginUiState.Success(user)
+                }
+                .onFailure { error ->
+                    _uiState.value = LoginUiState.Error(error.message ?: "Login failed")
+                }
         }
     }
 }

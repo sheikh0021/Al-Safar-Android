@@ -34,7 +34,9 @@ fun GuideAssignmentDto.toDomain(): GuideAssignment = GuideAssignment(
     packageTitle = package_title,
     status = status,
     assignedAt = assigned_at,
-    unreadCount = unread_count
+    unreadCount = unread_count,
+    travelerPassportUrl = traveler_passport_url,
+    travelerPhotoUrl = traveler_photo_url
 )
 
 fun GuideMessageDto.toDomain(): GuideMessage = GuideMessage(

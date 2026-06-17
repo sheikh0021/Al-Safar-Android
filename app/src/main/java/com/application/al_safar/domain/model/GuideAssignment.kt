@@ -11,6 +11,8 @@ data class GuideAssignment(
     val packageTitle: String?,
     val status: String,
     val assignedAt: String,
-    val unreadCount: Int
+    val unreadCount: Int,
+    val travelerPassportUrl: String? = null,
+    val travelerPhotoUrl: String? = null
 
 )
