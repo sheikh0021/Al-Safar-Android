@@ -47,11 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.application.al_safar.domain.model.GuideAssignment
 import com.application.al_safar.ui.components.GuideBottomNav
 import com.application.al_safar.ui.navigation.Screen
@@ -193,8 +195,17 @@ private fun GuideDashboardHeader(
 @Composable
 private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    val tripTabs = listOf("Ongoing", "Upcoming", "Completed")
+    val acceptState by viewModel.acceptState.collectAsState()
+    val tripTabs = listOf("Ongoing", "Upcoming", "Completed", "New")
     var selectedTripTab by remember { mutableStateOf(0) }
+
+    LaunchedEffect(acceptState) {
+        when (acceptState) {
+            is AcceptAssignmentState.Success -> viewModel.resetAcceptState()
+            is AcceptAssignmentState.Error -> viewModel.resetAcceptState()
+            else -> {}
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
@@ -262,21 +273,24 @@ private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
                 val trips = when (selectedTripTab) {
                     0    -> viewModel.getOngoingTrips()
                     1    -> viewModel.getUpcomingTrips()
-                    else -> viewModel.getCompletedTrips()
+                    2    -> viewModel.getCompletedTrips()
+                    else -> viewModel.getPendingTrips()
                 }
                 val emptyMessage = when (selectedTripTab) {
                     0    -> "No ongoing trips right now."
                     1    -> "No upcoming trips scheduled."
                     else -> "No completed trips yet."
                 }
-                TripList(trips = trips, emptyMessage = emptyMessage)
+                TripList(trips = trips, emptyMessage = emptyMessage, onAcceptClick = {assignmentId ->
+                    viewModel.acceptAssignment(assignmentId)
+                })
             }
         }
     }
 }
 
 @Composable
-private fun TripList(trips: List<GuideAssignment>, emptyMessage: String) {
+private fun TripList(trips: List<GuideAssignment>, emptyMessage: String, onAcceptClick: (Int) -> Unit) {
     if (trips.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -291,14 +305,14 @@ private fun TripList(trips: List<GuideAssignment>, emptyMessage: String) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(trips) { assignment ->
-                TripStatusCard(assignment = assignment)
+                TripStatusCard(assignment = assignment, onAcceptClick = onAcceptClick)
             }
         }
     }
 }
 
 @Composable
-private fun TripStatusCard(assignment: GuideAssignment) {
+private fun TripStatusCard(assignment: GuideAssignment, onAcceptClick: (Int) -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -325,6 +339,7 @@ private fun TripStatusCard(assignment: GuideAssignment) {
                     color = when (assignment.status.lowercase()) {
                         "ongoing", "active"     -> Emerald700
                         "completed", "done"     -> Color(0xFF2D5A27)
+                        "pending_acceptance"    -> Color(0xFF5A3A00)
                         else                    -> Color(0xFF4A3800)
                     }
                 ) {
@@ -335,6 +350,7 @@ private fun TripStatusCard(assignment: GuideAssignment) {
                         color = when (assignment.status.lowercase()) {
                             "ongoing", "active" -> TextPrimaryDarkBg
                             "completed", "done" -> Color(0xFF90EE90)
+                            "pending_acceptance"-> Color(0xFFFFCC66)
                             else                -> Gold500
                         },
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -354,6 +370,35 @@ private fun TripStatusCard(assignment: GuideAssignment) {
                     fontSize = 12.sp,
                     color = TextSecondaryDarkBg
                 )
+            }
+            if (!assignment.travelerPhotoUrl.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Traveler Photo:", fontFamily = Poppins, fontSize = 12.sp , color = TextSecondaryDarkBg)
+                AsyncImage(
+                    model = assignment.travelerPhotoUrl,
+                    contentDescription = "Traveler passport photo",
+                    modifier = Modifier.size(80.dp).clip(RoundedCornerShape(8.dp)).border(1.dp, Gold500, RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            if (assignment.status.lowercase() == "pending_acceptance") {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {onAcceptClick(assignment.id)},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Emerald700
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = "Accept Booking",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextPrimaryDarkBg
+                    )
+                }
             }
             if (!assignment.travelerEmail.isNullOrBlank()) {
                 Text(

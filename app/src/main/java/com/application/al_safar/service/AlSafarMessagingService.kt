@@ -13,6 +13,8 @@ import com.application.al_safar.R
 import com.application.al_safar.data.local.database.AlSafarDatabase
 import com.application.al_safar.data.local.entities.NotificationEntity
 import com.application.al_safar.data.local.preferences.PreferencesManager
+import com.application.al_safar.data.remote.api.NotificationApi
+import com.application.al_safar.data.remote.dto.DeviceTokenRegisterRequest
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
@@ -37,6 +39,7 @@ class AlSafarMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var preferencesManager: PreferencesManager
+    @Inject lateinit var notificationApi: NotificationApi
 
     private val tag = "AlSafarMessagingService"
 
@@ -80,8 +83,10 @@ class AlSafarMessagingService : FirebaseMessagingService() {
         // Save the token to local storage
         CoroutineScope(Dispatchers.IO).launch {
             preferencesManager.saveFcmToken(token)
-            // Also upload to backend in a real app
-            uploadFcmTokenToBackend(token)
+            val accessToken = preferencesManager.getAccessToken()
+            if (accessToken != null) {
+                uploadFcmTokenToBackend(token)
+            }
         }
     }
 
@@ -317,17 +322,18 @@ class AlSafarMessagingService : FirebaseMessagingService() {
      */
     private suspend fun uploadFcmTokenToBackend(token: String) {
         try {
-            // This would call the NotificationApi.registerDeviceToken()
-            // Example implementation:
-            // val api = /* get from DI */
-            // api.registerDeviceToken(
-            //     DeviceTokenRegisterRequest(
-            //         fcmToken = token,
-            //         deviceName = Build.MODEL,
-            //         deviceType = "android"
-            //     )
-            // )
-            Log.d(tag, "FCM token uploaded to backend")
+            val response = notificationApi.registerDeviceToken(
+                DeviceTokenRegisterRequest(
+                    fcmToken = token,
+                    deviceName = Build.MODEL,
+                    deviceType = "android"
+                )
+            )
+            if (response.isSuccessful) {
+                Log.d(tag, "FCM token uploaded to backend")
+            } else {
+                Log.w(tag, "FCM token registration failed: ${response.code()}")
+            }
         } catch (e: Exception) {
             Log.e(tag, "Error uploading FCM token", e)
         }

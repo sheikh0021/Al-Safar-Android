@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.al_safar.domain.model.GuideAssignment
 import com.application.al_safar.domain.repository.AuthRepository
+import com.application.al_safar.domain.usecase.guide.AcceptAssignmentUseCase
 import com.application.al_safar.domain.usecase.guide.GetMyTravelersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,13 @@ sealed class GuideDashboardUiState {
     data class Error(val message: String) : GuideDashboardUiState()
 }
 
+sealed class AcceptAssignmentState{
+    object Idle : AcceptAssignmentState()
+    object Loading : AcceptAssignmentState()
+    data class Success(val assignment : GuideAssignment) : AcceptAssignmentState()
+    data class Error(val message: String) : AcceptAssignmentState()
+}
+
 sealed class GuideTab {
     object Trips   : GuideTab()
     object Chats   : GuideTab()
@@ -27,6 +35,7 @@ sealed class GuideTab {
 @HiltViewModel
 class GuideDashboardViewModel @Inject constructor(
     private val getMyTravelersUseCase: GetMyTravelersUseCase,
+    private val acceptAssignmentUseCase: AcceptAssignmentUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -35,6 +44,9 @@ class GuideDashboardViewModel @Inject constructor(
 
     private val _selectedTab = MutableStateFlow<GuideTab>(GuideTab.Trips)
     val selectedTab: StateFlow<GuideTab> = _selectedTab.asStateFlow()
+
+    private val _acceptState = MutableStateFlow<AcceptAssignmentState>(AcceptAssignmentState.Idle)
+    val acceptState: StateFlow<AcceptAssignmentState> = _acceptState.asStateFlow()
 
     private val _logoutComplete = MutableStateFlow(false)
     val logoutComplete: StateFlow<Boolean> = _logoutComplete
@@ -86,6 +98,30 @@ class GuideDashboardViewModel @Inject constructor(
         getAssignments().filter {
             it.status.lowercase() in listOf("completed", "done", "cancelled")
         }
+
+    fun acceptAssignment(assignmentId: Int) {
+        viewModelScope.launch {
+            _acceptState.value = AcceptAssignmentState.Loading
+            acceptAssignmentUseCase(assignmentId)
+                .onSuccess { updatedAssignment ->
+                    _acceptState.value = AcceptAssignmentState.Success(updatedAssignment)
+                    loadTravelers()
+                }
+                .onFailure { error ->
+                    _acceptState.value = AcceptAssignmentState.Error(
+                        error.message ?: "Failed to accept assignment"
+                    )
+                }
+        }
+    }
+
+    fun getPendingTrips(): List<GuideAssignment> = getAssignments().filter {
+        it.status.lowercase() == "pending_acceptance"
+    }
+
+    fun resetAcceptState() {
+        _acceptState.value = AcceptAssignmentState.Idle
+    }
 
     fun getTotalUnreadCount(): Int =
         getAssignments().sumOf { it.unreadCount }

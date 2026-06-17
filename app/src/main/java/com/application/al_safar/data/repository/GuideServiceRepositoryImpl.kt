@@ -64,4 +64,12 @@ if (response.isSuccessful && response.body() != null)
         else
             throw Exception("Failed to send message: ${response.message()}")
     }
+
+    override suspend fun acceptAssignment(assignmentId: Int): Result<GuideAssignment> = runCatching {
+        val response = guideServiceApi.acceptAssignment(assignmentId)
+        if (response.isSuccessful && response.body() != null)
+            response.body()!!.toDomain()
+        else
+            throw Exception("Failed to accept assignment: ${response.errorBody()?.string()}")
+    }
 }

@@ -11,4 +11,5 @@ interface GuideServiceRepository {
     suspend fun getMyTravelers(): Result<List<GuideAssignment>>
     suspend fun getGuideMessages(assignmentId: Int): Result<List<GuideMessage>>
     suspend fun sendGuideMessage(assignmentId: Int, content: String): Result<GuideMessage>
+    suspend fun acceptAssignment(assignmentId: Int) : Result<GuideAssignment>
 }

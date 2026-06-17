@@ -76,6 +76,8 @@ dependencies {
     implementation(libs.hilt.work)
     kapt(libs.hilt.work.compiler)
 
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
     // Navigation
     implementation(libs.navigation.compose)
 
