@@ -196,7 +196,7 @@ private fun GuideDashboardHeader(
 private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val acceptState by viewModel.acceptState.collectAsState()
-    val tripTabs = listOf("Ongoing", "Upcoming", "Completed", "New")
+    val tripTabs = listOf("Pending", "Active", "Ongoing", "Completed", "Cancelled")
     var selectedTripTab by remember { mutableStateOf(0) }
 
     LaunchedEffect(acceptState) {
@@ -271,15 +271,18 @@ private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
             }
             is GuideDashboardUiState.Success -> {
                 val trips = when (selectedTripTab) {
-                    0    -> viewModel.getOngoingTrips()
-                    1    -> viewModel.getUpcomingTrips()
-                    2    -> viewModel.getCompletedTrips()
-                    else -> viewModel.getPendingTrips()
+                    0    -> viewModel.getPendingTrips()
+                    1    -> viewModel.getActiveTrips()
+                    2    -> viewModel.getOngoingTrips()
+                    3    -> viewModel.getCompletedTrips()
+                    else -> viewModel.getCancelledTrips()
                 }
                 val emptyMessage = when (selectedTripTab) {
-                    0    -> "No ongoing trips right now."
-                    1    -> "No upcoming trips scheduled."
-                    else -> "No completed trips yet."
+                    0    -> "No pending bookings awaiting acceptance."
+                    1    -> "No active assignments right now."
+                    2    -> "No ongoing trips right now."
+                    3    -> "No completed trips yet."
+                    else -> "No cancelled assignments."
                 }
                 TripList(trips = trips, emptyMessage = emptyMessage, onAcceptClick = {assignmentId ->
                     viewModel.acceptAssignment(assignmentId)

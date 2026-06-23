@@ -84,20 +84,17 @@ class GuideDashboardViewModel @Inject constructor(
     fun getAssignments(): List<GuideAssignment> =
         (_uiState.value as? GuideDashboardUiState.Success)?.assignments ?: emptyList()
 
-    fun getOngoingTrips(): List<GuideAssignment> =
-        getAssignments().filter {
-            it.status.lowercase() in listOf("ongoing", "active", "in_progress")
-        }
+    fun getActiveTrips(): List<GuideAssignment> =
+        getAssignments().filter { it.status.lowercase() == "active" }
 
-    fun getUpcomingTrips(): List<GuideAssignment> =
-        getAssignments().filter {
-            it.status.lowercase() in listOf("upcoming", "confirmed", "pending")
-        }
+    fun getOngoingTrips(): List<GuideAssignment> =
+        getAssignments().filter { it.status.lowercase() == "ongoing" }
 
     fun getCompletedTrips(): List<GuideAssignment> =
-        getAssignments().filter {
-            it.status.lowercase() in listOf("completed", "done", "cancelled")
-        }
+        getAssignments().filter { it.status.lowercase() == "completed" }
+
+    fun getCancelledTrips(): List<GuideAssignment> =
+        getAssignments().filter { it.status.lowercase() == "cancelled" }
 
     fun acceptAssignment(assignmentId: Int) {
         viewModelScope.launch {

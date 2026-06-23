@@ -1,11 +1,14 @@
 package com.application.al_safar.util
 
+import com.application.al_safar.BuildConfig
+
 /**
  * Base URL for the Django backend API.
- * - Emulator: use "http://10.0.2.2:8000/api/"
- * - Physical device (same Wi‑Fi): use "http://YOUR_PC_IP:8000/api/" (e.g. "http://192.168.1.100:8000/api/")
- * - Production: use "https://your-domain.com/api/"
+ * Configure via buildConfigField "API_BASE_URL" in app/build.gradle.kts:
+ * - Emulator: "http://10.0.2.2:8000/api/"
+ * - Physical device (same Wi‑Fi): "http://YOUR_PC_IP:8000/api/"
+ * - Production: "https://your-domain.com/api/"
  */
 object ApiConfig {
-    const val BASE_URL = "http://10.0.2.2:8000/api/"
+    const val BASE_URL = BuildConfig.API_BASE_URL
 }
