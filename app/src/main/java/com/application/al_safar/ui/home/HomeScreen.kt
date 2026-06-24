@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -68,6 +69,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,6 +86,7 @@ import com.application.al_safar.ui.theme.Emerald900
 import com.application.al_safar.ui.theme.Gold500
 import com.application.al_safar.ui.theme.TextPrimaryDarkBg
 import com.application.al_safar.ui.theme.TextPrimaryLightCard
+import com.application.al_safar.ui.theme.TextSecondaryDarkBg
 import com.application.al_safar.ui.theme.TextSecondaryLightCard
 import com.application.al_safar.ui.theme.Typography
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -101,6 +104,7 @@ fun HomeScreen(
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val travelerName by viewModel.travelerName.collectAsState()
     val unreadCount by notificationViewModel.unreadCount.collectAsState()
     var selectedFilter by remember { mutableStateOf<String?>(null) }
     val logoutComplete by viewModel.logoutComplete.collectAsState()
@@ -133,7 +137,7 @@ fun HomeScreen(
         }
     ) {  innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(bottom = 0.dp)
+            modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding())
         ){
             when (val state = uiState) {
                 is  HomeUiState.Loading -> {
@@ -149,13 +153,15 @@ fun HomeScreen(
                 is HomeUiState.Success -> {
                     HomeContent(
                         navController = navController,
+                        travelerName = travelerName,
                         unreadCount = unreadCount,
                         selectedFilter = selectedFilter,
                         packages = state.packages,
-                        onFilterSelected = {type ->
+                        onFilterSelected = { type ->
                             selectedFilter = type
                             viewModel.loadPackages(type)
-                        }
+                        },
+                        bottomContentPadding = innerPadding.calculateBottomPadding()
                     )
                 }
             }
@@ -166,15 +172,17 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     navController: NavController,
+    travelerName: String,
     unreadCount: Int,
     selectedFilter: String?,
     packages: List<Package>,
-    onFilterSelected: (String?) -> Unit
+    onFilterSelected: (String?) -> Unit,
+    bottomContentPadding: Dp = 0.dp
 ){
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 110.dp + bottomContentPadding),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -183,8 +191,9 @@ private fun HomeContent(
             Box(modifier = Modifier.fillMaxWidth()) {
                 // Background Hero Image
                 HomeHeroSection(
+                    travelerName = travelerName,
                     unreadCount = unreadCount,
-                    onBellClick =  {navController.navigate(Screen.NotificationCenter.route)}
+                    onBellClick = { navController.navigate(Screen.NotificationCenter.route) }
                 )
                 // Floating Card pushed down using a Spacer
                 Column {
@@ -236,56 +245,94 @@ private fun HomeContent(
 
 @Composable
 private fun HomeHeroSection(
+    travelerName: String,
     unreadCount: Int,
     onBellClick: () -> Unit
-){
+) {
     Box(
-        modifier = Modifier.fillMaxWidth().height(288.dp).background(Emerald900)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(288.dp)
+            .background(Emerald900)
     ) {
         Image(
             painter = painterResource(id = R.drawable.qibla_bg),
-            contentDescription = "Kaaba Background Image",
+            contentDescription = "Umrah hero background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
         Box(
-            modifier = Modifier.fillMaxSize().background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Emerald900.copy(alpha = 0.18f),
-                        Emerald900.copy(alpha = 0.32f),
-                        Emerald900.copy(alpha = 0.78f),
-
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Emerald900.copy(alpha = 0.18f),
+                            Emerald900.copy(alpha = 0.32f),
+                            Emerald900.copy(alpha = 0.78f),
                         )
+                    )
                 )
-            )
         )
-        Column(
-            modifier = Modifier.align(Alignment.TopStart).padding(horizontal = 16.dp, vertical = 18.dp)
-        ) {
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = "Traveler 🕋",
-                style = Typography.headlineLarge,
-                color = TextPrimaryDarkBg
-            )
-        }
-        IconButton(
-            onClick = onBellClick,
-            modifier = Modifier.align(Alignment.TopEnd).padding(top = 28.dp, end = 12.dp)
-        ) {
-            BadgedBox(
-                badge = {
-                    if (unreadCount > 0){
-                        Badge(containerColor = Gold500)
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.NotificationsNone,
-                    contentDescription = "Notifications",
-                    tint = TextPrimaryDarkBg
+        // Extra top scrim so name + bell stay readable over the photo
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.35f),
+                            Color.Transparent
+                        )
+                    )
                 )
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text(
+                    text = "As-salamu Alaykum",
+                    style = Typography.bodyMedium,
+                    color = TextSecondaryDarkBg
+                )
+                Text(
+                    text = travelerName.ifBlank { "Traveler" },
+                    style = Typography.headlineLarge,
+                    color = TextPrimaryDarkBg,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            IconButton(onClick = onBellClick) {
+                BadgedBox(
+                    badge = {
+                        if (unreadCount > 0) {
+                            Badge(containerColor = Gold500)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.NotificationsNone,
+                        contentDescription = "Notifications",
+                        tint = Gold500,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
         }
     }
@@ -303,7 +350,9 @@ private fun IntroFloatingCard(modifier: Modifier = Modifier){
             modifier = Modifier.fillMaxWidth().height(168.dp)
         ){
             Column(
-                modifier = Modifier.align(Alignment.CenterStart).padding(start = 18.dp, top = 18.dp, end = 120.dp, bottom = 18.dp)
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 18.dp, top = 18.dp, end = 120.dp, bottom = 18.dp)
             ) {
                 Text(
                     text = "Begin your \nUmrah journey\nwith peace of mind.",
@@ -320,7 +369,10 @@ private fun IntroFloatingCard(modifier: Modifier = Modifier){
             Image(
                 painter = painterResource(id = R.drawable.faint_tomb),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 12.dp).size(118.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 12.dp)
+                    .size(118.dp),
                 alpha = 0.22f
             )
         }

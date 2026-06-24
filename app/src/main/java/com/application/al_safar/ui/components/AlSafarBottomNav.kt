@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,8 +18,6 @@ import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,10 +36,13 @@ import com.application.al_safar.ui.theme.Emerald700
 fun AlSafarBottomNav(
     currentRoute: String,
     onNavigate: (String) -> Unit
-){
-
+) {
     Surface(
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp).fillMaxWidth().height(72.dp),
+        modifier = Modifier
+            .navigationBarsPadding()   // lifts nav above system gesture bar
+            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .fillMaxWidth()
+            .height(72.dp),
         shape = RoundedCornerShape(36.dp),
         color = Color.White,
         shadowElevation = 12.dp
@@ -54,28 +56,27 @@ fun AlSafarBottomNav(
                 label = "Home",
                 icon = if (currentRoute == Screen.Home.route) Icons.Default.Home else Icons.Outlined.Home,
                 isSelected = currentRoute == Screen.Home.route
-            ){ onNavigate(Screen.Home.route)}
+            ) { onNavigate(Screen.Home.route) }
 
             NavItem(
                 label = "Bookings",
                 icon = Icons.Default.Assignment,
                 isSelected = currentRoute == Screen.TripDashboard.route
-            ) {onNavigate(Screen.TripDashboard.route) }
+            ) { onNavigate(Screen.TripDashboard.route) }
 
             NavItem(
                 label = "Support",
                 icon = Icons.Default.QuestionAnswer,
                 isSelected = currentRoute == Screen.AiChatbot.route
-            ) { onNavigate(Screen.AiChatbot.route)}
+            ) { onNavigate(Screen.AiChatbot.route) }
 
             NavItem(
                 label = "Profile",
                 icon = Icons.Default.PersonOutline,
                 isSelected = currentRoute == Screen.Profile.route
-            ) {onNavigate(Screen.Profile.route) }
+            ) { onNavigate(Screen.Profile.route) }
         }
     }
-
 }
 
 @Composable
@@ -84,10 +85,13 @@ private fun NavItem(
     icon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit
-){
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick).padding(8.dp)
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(8.dp)
     ) {
         Icon(
             imageVector = icon,
