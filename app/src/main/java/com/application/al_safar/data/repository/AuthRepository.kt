@@ -28,7 +28,9 @@ class AuthRepositoryImpl(
                 preferencesManager.saveRefreshToken(loginResponse.refresh)
                 preferencesManager.saveUserId(loginResponse.user.id.toString())
                 preferencesManager.saveUserRole(loginResponse.user.role)
-                preferencesManager.saveUserName(loginResponse.user.firstName)
+                preferencesManager.saveUserName(
+                    "${loginResponse.user.firstName} ${loginResponse.user.lastName}".trim()
+                )
                 preferencesManager.setLoggedIn(true)
 
                 val user = loginResponse.user.toDomain()
@@ -69,7 +71,9 @@ class AuthRepositoryImpl(
                 preferencesManager.saveRefreshToken(loginResponse.refresh)
                 preferencesManager.saveUserId(loginResponse.user.id.toString())
                 preferencesManager.saveUserRole(loginResponse.user.role)
-                preferencesManager.saveUserName(loginResponse.user.firstName)
+                preferencesManager.saveUserName(
+                    "${loginResponse.user.firstName} ${loginResponse.user.lastName}".trim()
+                )
                 preferencesManager.setLoggedIn(true)
 
                 val user = loginResponse.user.toDomain()
