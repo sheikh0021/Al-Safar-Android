@@ -25,6 +25,7 @@ class AiChatbotViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    fun sendQuickPrompt(prompt: String) = sendMessage(prompt)
     fun sendMessage(userText: String){
         if (userText.isBlank()) return
 

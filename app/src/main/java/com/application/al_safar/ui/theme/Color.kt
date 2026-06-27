@@ -43,3 +43,17 @@ val TextSecondaryLightCard = Color(0xFF5E7268)
 val DividerSoft = Color(0x223B5A4B)
 val ProfileDeepDark = Color(0xFF081712)
 val ProfileCardDark = Color(0xFF102018)
+
+val RafiqBgTop = Color(0xFF0A241C)
+val RafiqBgBottom = Color(0xFF061912)
+val RafiqHeaderScrim = Color(0xCC081712)      // top fade over illustration
+val RafiqWelcomeCardBg = Color(0xFF102820)
+val RafiqWelcomeCardBorder = Color(0x33D4AF37)
+val RafiqUserBubble = Color(0xFF1B5E3E)
+val RafiqBotBubble = Color(0xFF143528)
+val RafiqBotBubbleBorder = Color(0x332E9A57)
+val RafiqInputBg = Color(0xFF0E2A22)
+val RafiqInputBorder = Color(0xFF2A4D3F)
+val RafiqOnlineGreen = Color(0xFF4CAF50)
+val RafiqChipBorder = Gold500
+val RafiqKeywordGold = Gold500
