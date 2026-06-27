@@ -445,83 +445,110 @@ private fun PremiumPackageCard(
     pkg: Package,
     isWide: Boolean,
     onClick: () -> Unit
-){
-    val accentColor = when(pkg.packageType.lowercase()){
-        "premium" -> Emerald700
-        "standard" -> Gold500
-        "deluxe" -> Gold500
-        else -> Emerald700
+) {
+    val titleText = if (pkg.title.isNotBlank()) {
+        pkg.title
+    } else {
+        pkg.packageType.replaceFirstChar { it.uppercase() }
     }
-
-    val titleText = pkg.packageType.replaceFirstChar { it.uppercase() }
 
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().then(if (isWide) Modifier else Modifier.aspectRatio(0.9f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (isWide) Modifier.height(150.dp)
+                else Modifier.aspectRatio(0.85f)
+            ),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(20.dp))
         ) {
-            Row(verticalAlignment = Alignment.Top) {
-                Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(accentColor.copy(alpha = 0.10f)), contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Outlined.Inventory2,
-                        contentDescription = null,
-                        tint = accentColor,
-                        modifier = Modifier.size(22.dp)
+            Image(
+                painter = painterResource(id = R.drawable.package_cards),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0x55000000),
+                                Color(0x88000000),
+                                Color(0xCC0F3D2E)
+                            )
+                        )
                     )
-                }
-                Spacer(modifier = Modifier.size(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
                     Text(
-                        text = if (pkg.title.isNotBlank()) titleText else titleText,
+                        text = titleText,
                         style = Typography.titleMedium,
-                        color = TextPrimaryLightCard,
-                        maxLines = 1,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "Umrah Package",
                         style = Typography.bodySmall,
-                        color = TextSecondaryLightCard
+                        color = Color.White.copy(alpha = 0.75f)
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(if (isWide) 28.dp else 22.dp))
-            Text(
-                text = "₹${pkg.price}",
-                style = Typography.titleLarge.copy(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = TextPrimaryLightCard
-            )
-            Spacer(modifier = Modifier.height(6.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${pkg.durationDays} days",
-                    style = Typography.bodyMedium,
-                    color = TextSecondaryLightCard
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier.size(32.dp).clip(CircleShape).background(Emerald700).clickable(onClick = onClick),
-                    contentAlignment = Alignment.Center
-                ){
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                        contentDescription = "View Package",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                Column {
+                    Text(
+                        text = "₹${pkg.price}",
+                        style = Typography.titleLarge.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Gold500
                     )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${pkg.durationDays} days",
+                            style = Typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.85f)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(Emerald700)
+                                .clickable(onClick = onClick),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = "View Package",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
