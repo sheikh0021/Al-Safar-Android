@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     object AiChatbot : Screen("ai_chatbot")
     object GuideDashboard : Screen("guide_dashboard")
     object MyGuide : Screen("my_guide")
+    object TravelerMessages : Screen("traveler_messages")
     object NotificationCenter : Screen("notification_center")
     object NotificationPreferences : Screen("notification_preferences")
     object Profile: Screen("profile")
@@ -42,8 +43,11 @@ sealed class Screen(val route: String) {
     object UmrahStepDetail : Screen("umrah_step_detail/{stepId}") {
         fun createRoute(stepId: String) = "umrah_step_detail/$stepId"
     }
-    object TravelerChat : Screen("traveler_chat/{assignmentId}") {
-        fun createRoute(assignmentId: String) = "traveler_chat/$assignmentId"
+    object TravelerChat : Screen("traveler_chat/{assignmentId}/{guideName}") {
+        fun createRoute(assignmentId: String, guideName: String = "Your Guide"): String {
+            val encoded = java.net.URLEncoder.encode(guideName, "UTF-8")
+            return "traveler_chat/$assignmentId/$encoded"
+        }
     }
     object GuideChatDetail : Screen("guide_chat_detail/{assignmentId}"){
         fun createRoute(assignmentId: String) = "guide_chat_detail/$assignmentId"

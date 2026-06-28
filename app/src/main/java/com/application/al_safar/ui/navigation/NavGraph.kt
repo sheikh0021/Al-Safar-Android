@@ -22,6 +22,7 @@ import com.application.al_safar.ui.guide.GuideChatScreen
 import com.application.al_safar.ui.guide.GuideDashboardScreen
 import com.application.al_safar.ui.guide.GuideProfileScreen
 import com.application.al_safar.ui.guide.MyGuideScreen
+import com.application.al_safar.ui.messages.TravelerMessagesScreen
 import com.application.al_safar.ui.guide.UmrahGuideScreen
 import com.application.al_safar.ui.guide.UmrahStepDetailScreen
 import com.application.al_safar.ui.home.HomeScreen
@@ -147,15 +148,27 @@ fun NavGraph(
             MyGuideScreen(navController = navController)
         }
 
+        composable(Screen.TravelerMessages.route) {
+            TravelerMessagesScreen(navController = navController)
+        }
+
         composable(
             route = Screen.TravelerChat.route,
-            arguments = listOf(navArgument("assignmentId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("assignmentId") { type = NavType.StringType },
+                navArgument("guideName") {
+                    type = NavType.StringType
+                    defaultValue = "Your Guide"
+                }
+            )
         ) { backStackEntry ->
+            val guideNameRaw = backStackEntry.arguments?.getString("guideName") ?: "Your Guide"
+            val guideName = java.net.URLDecoder.decode(guideNameRaw, "UTF-8")
             GuideChatScreen(
                 assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
                 isGuide = false,
                 myUserId = myUserId,
-                otherPersonName = "Your Guide",
+                otherPersonName = guideName,
                 navController = navController
             )
         }
