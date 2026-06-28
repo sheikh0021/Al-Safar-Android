@@ -115,8 +115,17 @@ fun MyGuideScreen(
                             GuideCard(
                                 assignment = assignment,
                                 onChatClick = {
+                                    val guide = assignment.guide
+                                    val guideName = if (guide != null) {
+                                        "${guide.firstName} ${guide.lastName}".trim()
+                                    } else {
+                                        "Your Guide"
+                                    }
                                     navController.navigate(
-                                        Screen.TravelerChat.createRoute(assignment.id.toString())
+                                        Screen.TravelerChat.createRoute(
+                                            assignmentId = assignment.id.toString(),
+                                            guideName = guideName
+                                        )
                                     )
                                 }
 

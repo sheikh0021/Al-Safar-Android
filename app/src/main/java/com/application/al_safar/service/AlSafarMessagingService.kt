@@ -188,6 +188,8 @@ class AlSafarMessagingService : FirebaseMessagingService() {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("notification_data", Gson().toJson(data))
             data["screen"]?.let { putExtra("target_screen", it) }
+            data["assignment_id"]?.let { putExtra("assignment_id", it) }
+            data["notification_type"]?.let { putExtra("notification_type", it) }
         }
 
         val pendingIntent = PendingIntent.getActivity(

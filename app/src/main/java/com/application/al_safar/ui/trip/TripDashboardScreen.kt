@@ -27,13 +27,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,6 +61,7 @@ import com.application.al_safar.R
 import com.application.al_safar.domain.model.Booking
 import com.application.al_safar.ui.navigation.Screen
 import com.application.al_safar.ui.theme.AlSafarGreenLight
+import com.application.al_safar.ui.theme.Emerald900
 import com.application.al_safar.ui.theme.Gold500
 import com.application.al_safar.ui.theme.Playfair
 import com.application.al_safar.ui.theme.Poppins
@@ -69,6 +76,8 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 
 private enum class TripTab { UPCOMING, PAST }
 
@@ -79,7 +88,19 @@ fun TripDashboardScreen(
     viewModel: TripDashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val unreadMessages by viewModel.totalUnreadMessages.collectAsState()
     var selectedTab by remember { mutableStateOf(TripTab.UPCOMING) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshUnreadCount()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         TripDashboardBackground()
@@ -89,7 +110,12 @@ fun TripDashboardScreen(
                 .fillMaxSize()
                 .navigationBarsPadding()
         ) {
-            TripDashboardHeader()
+            TripDashboardHeader(
+                unreadMessageCount = unreadMessages,
+                onMessagesClick = {
+                    navController.navigate(Screen.TravelerMessages.route)
+                }
+            )
 
             TripTabRow(
                 selectedTab = selectedTab,
@@ -202,29 +228,59 @@ private fun TripDashboardBackground() {
 }
 
 @Composable
-private fun TripDashboardHeader() {
-    Column(
+private fun TripDashboardHeader(
+    unreadMessageCount: Int,
+    onMessagesClick: () -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(horizontal = 24.dp)
-            .padding(top = 12.dp, bottom = 20.dp)
+            .padding(top = 12.dp, bottom = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
-        Text(
-            text = "My Trips",
-            fontFamily = Playfair,
-            fontWeight = FontWeight.Bold,
-            fontSize = 32.sp,
-            color = TextPrimaryDarkBg
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = "All your Umrah journeys in one place",
-            fontFamily = Poppins,
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
-            color = TextSecondaryDarkBg
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "My Trips",
+                fontFamily = Playfair,
+                fontWeight = FontWeight.Bold,
+                fontSize = 32.sp,
+                color = TextPrimaryDarkBg
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "All your Umrah journeys in one place",
+                fontFamily = Poppins,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+                color = TextSecondaryDarkBg
+            )
+        }
+
+        IconButton(onClick = onMessagesClick) {
+            BadgedBox(
+                badge = {
+                    if (unreadMessageCount > 0) {
+                        Badge(containerColor = Gold500) {
+                            Text(
+                                text = if (unreadMessageCount > 9) "9+" else "$unreadMessageCount",
+                                fontSize = 10.sp,
+                                color = Emerald900
+                            )
+                        }
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Chat,
+                    contentDescription = "Messages from your guide",
+                    tint = Gold500,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
     }
 }
 
