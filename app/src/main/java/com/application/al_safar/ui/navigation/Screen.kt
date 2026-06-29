@@ -49,8 +49,12 @@ sealed class Screen(val route: String) {
             return "traveler_chat/$assignmentId/$encoded"
         }
     }
-    object GuideChatDetail : Screen("guide_chat_detail/{assignmentId}"){
-        fun createRoute(assignmentId: String) = "guide_chat_detail/$assignmentId"
+    object GuideChatDetail : Screen("guide_chat_detail/{assignmentId}/{travelerName}"){
+        fun createRoute(assignmentId: String, travelerName: String = "Traveler") : String
+        {
+            val encoded = java.net.URLEncoder.encode(travelerName, "UTF-8")
+            return "guide_chat_detail/$assignmentId/$encoded"
+        }
     }
     object TravelerSummary : Screen("traveler_summary/{bookingId}") {
         fun createRoute(bookingId: String) = "traveler_summary/${bookingId}"
