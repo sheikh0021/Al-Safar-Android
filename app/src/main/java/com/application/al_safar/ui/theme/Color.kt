@@ -57,3 +57,10 @@ val RafiqInputBorder = Color(0xFF2A4D3F)
 val RafiqOnlineGreen = Color(0xFF4CAF50)
 val RafiqChipBorder = Gold500
 val RafiqKeywordGold = Gold500
+
+// Guide ↔ Traveler human chat (matches messaging mockup)
+val GuideChatBg = Color(0xFF061912)
+val GuideChatIncomingBubble = Color(0xFF102820)
+val GuideChatOutgoingBubble = Color(0xFF1B5E3E)
+val GuideChatInputBg = Color(0xFF0A1F18)
+val GuideChatHeaderDivider = Color(0x332E9A57)

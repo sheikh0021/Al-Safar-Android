@@ -175,13 +175,21 @@ fun NavGraph(
 
         composable(
             route = Screen.GuideChatDetail.route,
-            arguments = listOf(navArgument("assignmentId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("assignmentId") { type = NavType.StringType },
+                navArgument("travelerName") {
+                    type = NavType.StringType
+                    defaultValue = "Traveler"
+                }
+            )
         ) { backStackEntry ->
+            val travelerNameRaw = backStackEntry.arguments?.getString("travelerName") ?: "Traveler"
+            val travelerName = java.net.URLDecoder.decode(travelerNameRaw, "UTF-8")
             GuideChatScreen(
                 assignmentId = backStackEntry.arguments?.getString("assignmentId") ?: "",
                 isGuide = true,
                 myUserId = myUserId,
-                otherPersonName = "Traveler",
+                otherPersonName = travelerName,
                 navController = navController
             )
         }

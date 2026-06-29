@@ -1,5 +1,6 @@
 package com.application.al_safar.ui.guide
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,8 +33,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,24 +47,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.application.al_safar.R
 import com.application.al_safar.domain.model.GuideAssignment
 import com.application.al_safar.ui.components.GuideBottomNav
 import com.application.al_safar.ui.navigation.Screen
 import com.application.al_safar.ui.theme.Emerald700
 import com.application.al_safar.ui.theme.Emerald900
 import com.application.al_safar.ui.theme.Gold500
+import com.application.al_safar.ui.theme.GuideChatIncomingBubble
 import com.application.al_safar.ui.theme.Playfair
 import com.application.al_safar.ui.theme.Poppins
 import com.application.al_safar.ui.theme.ProfileCardDark
 import com.application.al_safar.ui.theme.ProfileDeepDark
+import com.application.al_safar.ui.theme.RafiqBotBubbleBorder
 import com.application.al_safar.ui.theme.TextPrimaryDarkBg
 import com.application.al_safar.ui.theme.TextSecondaryDarkBg
 
@@ -115,7 +120,10 @@ fun GuideDashboardScreen(
                     viewModel = viewModel,
                     onChatClick = { assignment ->
                         navController.navigate(
-                            Screen.GuideChatDetail.createRoute(assignment.id.toString())
+                            Screen.GuideChatDetail.createRoute(
+                                assignmentId = assignment.id.toString(),
+                                travelerName = assignment.travelerName ?: "Traveler"
+                            )
                         )
                     }
                 )
@@ -208,10 +216,11 @@ private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(
+        ScrollableTabRow(
             selectedTabIndex = selectedTripTab,
             containerColor = ProfileDeepDark,
             contentColor = Gold500,
+            edgePadding = 12.dp,
             indicator = { tabPositions ->
                 Box(
                     modifier = Modifier
@@ -232,6 +241,8 @@ private fun TripsTabContent(viewModel: GuideDashboardViewModel) {
                             fontFamily = Poppins,
                             fontWeight = if (selectedTripTab == index) FontWeight.SemiBold else FontWeight.Normal,
                             fontSize = 13.sp,
+                            maxLines = 1,
+                            softWrap = false,
                             color = if (selectedTripTab == index) Gold500 else TextSecondaryDarkBg
                         )
                     }
@@ -448,24 +459,19 @@ private fun ChatInboxCard(assignment: GuideAssignment, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(14.dp),
-        color = ProfileCardDark
+        color = GuideChatIncomingBubble,
+        border = androidx.compose.foundation.BorderStroke(1.dp, RafiqBotBubbleBorder)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.size(42.dp).clip(CircleShape).background(Emerald700),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = assignment.travelerName?.firstOrNull()?.uppercase() ?: "T",
-                    fontFamily = Poppins,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = Gold500
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.hexagon),
+                contentDescription = null,
+                modifier = Modifier.size(42.dp),
+                contentScale = ContentScale.Fit
+            )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
