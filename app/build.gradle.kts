@@ -23,11 +23,30 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Base URL for Django backend. Use 10.0.2.2 for emulator (localhost).
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
+        // API_BASE_URL is set per flavor below (local vs production).
+        // Switch in Android Studio: View → Tool Windows → Build Variants
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("local") {
+            dimension = "environment"
+            // Emulator → your Mac's Django at localhost:8000
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/\"")
+            // Physical phone on same Wi‑Fi? Uncomment below and comment the line above:
+            // buildConfigField("String", "API_BASE_URL", "\"http://192.168.1.XXX:8000/api/\"")
+        }
+        create("production") {
+            dimension = "environment"
+            // Live Render backend (must be https)
+            buildConfigField("String", "API_BASE_URL", "\"https://al-safar-backend.onrender.com/api/\"")
+        }
     }
 
     buildTypes {
+        debug {
+            // debug + local = local backend; debug + production = live backend while debugging
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
