@@ -3,7 +3,7 @@ package com.application.al_safar.di
 import com.application.al_safar.BuildConfig
 import com.application.al_safar.data.remote.api.*
 import com.application.al_safar.data.remote.interceptors.AuthInterceptor
-import com.application.al_safar.util.ApiConfig
+import com.application.al_safar.core.ApiConfig
 import com.application.al_safar.data.remote.api.NotificationApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

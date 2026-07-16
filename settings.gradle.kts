@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Al-Safar"
 include(":app")
+include(":shared")

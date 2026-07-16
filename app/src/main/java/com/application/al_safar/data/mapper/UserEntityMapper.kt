@@ -1,22 +1,14 @@
 package com.application.al_safar.data.mapper
 
 import com.application.al_safar.data.local.entities.UserEntity
-import com.application.al_safar.data.remote.dto.auth.UserDto
 import com.application.al_safar.domain.model.User
 
-
-fun UserDto.toDomain(): User {
-    return User(
-        id = id.toString(),
-        email = email,
-        firstName = firstName,
-        lastName = lastName,
-        phoneNumber = phoneNumber,
-        profileImageUrl = profileImageUrl,
-        role = role
-    )
-}
-
+/**
+ * Room mappers for User.
+ * File must NOT be named UserMapper.kt — shared module already has
+ * com.application.al_safar.data.mapper.UserMapper.kt, and both would compile
+ * to the same JVM class UserMapperKt (runtime NoSuchMethodError for toEntity).
+ */
 fun UserEntity.toDomain(): User {
     return User(
         id = id,

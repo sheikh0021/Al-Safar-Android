@@ -7,13 +7,16 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.application.al_safar.core.SessionStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "al_safar_prefs")
 
-class PreferencesManager(private val context: Context) {
+class PreferencesManager(
+    private val context: Context
+) : SessionStorage {
     companion object {
         private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
@@ -25,33 +28,33 @@ class PreferencesManager(private val context: Context) {
         private val USER_NAME_KEY = stringPreferencesKey("user_name")
     }
 
-    val accessToken: Flow<String?> = context.dataStore.data.map { it[ACCESS_TOKEN_KEY] }
-    val refreshToken: Flow<String?> = context.dataStore.data.map { it[REFRESH_TOKEN_KEY] }
-    val userId: Flow<String?> = context.dataStore.data.map { it[USER_ID_KEY] }
-    val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN_KEY] ?: false }
+    override val accessToken: Flow<String?> = context.dataStore.data.map { it[ACCESS_TOKEN_KEY] }
+    override val refreshToken: Flow<String?> = context.dataStore.data.map { it[REFRESH_TOKEN_KEY] }
+    override val userId: Flow<String?> = context.dataStore.data.map { it[USER_ID_KEY] }
+    override val isLoggedIn: Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN_KEY] ?: false }
     val fcmToken: Flow<String?> = context.dataStore.data.map { it[FCM_TOKEN_KEY] }
     val language: Flow<String> = context.dataStore.data.map { it[LANGUAGE_KEY] ?: "en" }
-    val userRole: Flow<String> = context.dataStore.data.map { it[USER_ROLE_KEY] ?: "traveler" }
-    val userName: Flow<String> = context.dataStore.data.map { it[USER_NAME_KEY] ?: "" }
+    override val userRole: Flow<String> = context.dataStore.data.map { it[USER_ROLE_KEY] ?: "traveler" }
+    override val userName: Flow<String> = context.dataStore.data.map { it[USER_NAME_KEY] ?: "" }
 
     suspend fun getAccessToken(): String? = accessToken.first()
     suspend fun isLoggedIn(): Boolean = isLoggedIn.first()
     suspend fun getLanguage(): String? = context.dataStore.data.first()[LANGUAGE_KEY]
 
-    suspend fun saveAccessToken(token: String) {
+    override suspend fun saveAccessToken(token: String) {
         context.dataStore.edit { it[ACCESS_TOKEN_KEY] = token }
     }
 
-    suspend fun saveRefreshToken(token: String) {
+    override suspend fun saveRefreshToken(token: String) {
         context.dataStore.edit { it[REFRESH_TOKEN_KEY] = token }
     }
 
-    suspend fun saveUserId(userId: String) {
-        context.dataStore.edit { it[USER_ID_KEY] = userId }
+    override suspend fun saveUserId(id: String) {
+        context.dataStore.edit { it[USER_ID_KEY] = id }
     }
 
-    suspend fun setLoggedIn(isLoggedIn: Boolean) {
-        context.dataStore.edit { it[IS_LOGGED_IN_KEY] = isLoggedIn }
+    override suspend fun setLoggedIn(value: Boolean) {
+        context.dataStore.edit { it[IS_LOGGED_IN_KEY] = value }
     }
 
     suspend fun saveFcmToken(token: String) {
@@ -61,15 +64,16 @@ class PreferencesManager(private val context: Context) {
     suspend fun saveLanguage(language: String) {
         context.dataStore.edit { it[LANGUAGE_KEY] = language }
     }
-    suspend fun saveUserRole(role: String){
+
+    override suspend fun saveUserRole(role: String) {
         context.dataStore.edit { it[USER_ROLE_KEY] = role }
     }
 
-    suspend fun saveUserName(name: String) {
+    override suspend fun saveUserName(name: String) {
         context.dataStore.edit { it[USER_NAME_KEY] = name }
     }
 
-    suspend fun clearAll() {
+    override suspend fun clearAll() {
         context.dataStore.edit { it.clear() }
     }
 }

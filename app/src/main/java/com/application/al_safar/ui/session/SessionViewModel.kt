@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.al_safar.data.local.preferences.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -14,6 +15,8 @@ import javax.inject.Inject
 class SessionViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
+
+    val isLoggedIn: Flow<Boolean> = preferencesManager.isLoggedIn
 
     private val _userId = MutableStateFlow(0)
     val userId: StateFlow<Int> = _userId

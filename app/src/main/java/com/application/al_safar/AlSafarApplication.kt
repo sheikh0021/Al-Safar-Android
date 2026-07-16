@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.application.al_safar.core.ApiConfig
 import dagger.hilt.android.HiltAndroidApp
 import org.maplibre.android.MapLibre
 import javax.inject.Inject
@@ -25,6 +26,8 @@ class AlSafarApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // Shared Ktor/network code reads this; flavors still live in app BuildConfig.
+        ApiConfig.initialize(BuildConfig.API_BASE_URL)
         MapLibre.getInstance(this)
         createNotificationChannels()
     }
