@@ -140,4 +140,5 @@ dependencies {
 
     // Image Loading
     implementation(libs.coil.compose)
+    implementation(project(":shared"))
 }

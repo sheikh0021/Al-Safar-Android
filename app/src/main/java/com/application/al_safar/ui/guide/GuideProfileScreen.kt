@@ -169,8 +169,8 @@ private fun GuideProfileContent(
                         Text(text = "${user.firstName} ${user.lastName}", fontFamily = Playfair, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = TextPrimaryDarkBg)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(text = user.email, fontFamily = Poppins, fontSize = 13.sp, color = TextSecondaryDarkBg)
-                        if (!user.phoneNumber.isNullOrBlank()) {
-                            Text(text = user.phoneNumber, fontFamily = Poppins, fontSize = 13.sp, color = TextSecondaryDarkBg)
+                        user.phoneNumber?.takeIf { it.isNotBlank() }?.let { phone ->
+                            Text(text = phone, fontFamily = Poppins, fontSize = 13.sp, color = TextSecondaryDarkBg)
                         }
                     }
                 }

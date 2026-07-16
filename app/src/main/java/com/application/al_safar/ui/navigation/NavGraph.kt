@@ -1,6 +1,7 @@
 package com.application.al_safar.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +47,52 @@ fun NavGraph(
     val sessionViewModel: SessionViewModel = hiltViewModel()
     val myUserId by sessionViewModel.userId.collectAsState()
     val guideName by sessionViewModel.userName.collectAsState()
+    val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState(true)
+
+    LaunchedEffect(isLoggedIn) {
+        val current = navController.currentBackStackEntry?.destination?.route
+
+        val protectedRoutes = setOf(
+            Screen.Home.route,
+            Screen.GuideDashboard.route,
+            Screen.Profile.route,
+            Screen.GuideProfile.route,
+            Screen.TripDashboard.route,
+            Screen.MyGuide.route,
+            Screen.TravelerMessages.route,
+            Screen.Map.route,
+            Screen.AiChatbot.route,
+            Screen.Support.route,
+            Screen.UmrahGuide.route,
+            Screen.DuaCollection.route,
+            Screen.NotificationCenter.route,
+            Screen.NotificationPreferences.route
+        )
+
+        val onProtectedScreen =
+            current != null && (
+                    current in protectedRoutes ||
+                            current.startsWith("package_detail") ||
+                            current.startsWith("booking_date_group") ||
+                            current.startsWith("upload_documents") ||
+                            current.startsWith("payment") ||
+                            current.startsWith("confirmation") ||
+                            current.startsWith("traveler_chat") ||
+                            current.startsWith("guide_chat_detail") ||
+                            current.startsWith("traveler_summary") ||
+                            current.startsWith("umrah_step_detail")
+                    )
+
+        if (!isLoggedIn && onProtectedScreen) {
+            navController.navigate(Screen.Login.route) {
+                // Clear whole back stack so Back cannot reopen dead dashboard
+                popUpTo(navController.graph.id) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -113,7 +160,8 @@ fun NavGraph(
                 onNavigateToMyGuide = { navController.navigate(Screen.MyGuide.route) },
                 onLogout = {
                     navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+popUpTo(navController.graph.id) {inclusive = true}
+                        launchSingleTop = true
                     }
                 }
             )
@@ -126,7 +174,8 @@ fun NavGraph(
                 myUserId = myUserId,
                 onLogout = {
                     navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.GuideDashboard.route) {inclusive = true}
+popUpTo(navController.graph.id) {inclusive = true}
+                        launchSingleTop = true
                     }
                 }
             )
@@ -137,7 +186,8 @@ fun NavGraph(
                 navController = navController,
                 onLogout = {
                     navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.GuideDashboard.route) {inclusive = true}
+                        popUpTo(navController.graph.id) {inclusive = true}
+                        launchSingleTop = true
                     }
                 }
             )
@@ -295,7 +345,8 @@ fun NavGraph(
                 navController = navController,
                 onLogout = {
                     navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) {inclusive = true}
+                        popUpTo(navController.graph.id) {inclusive = true}
+                        launchSingleTop = true
                     }
                 }
             )

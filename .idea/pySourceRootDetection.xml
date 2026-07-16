@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PySourceRootDetectionService">
+    <option name="sourcePathsSet">
+      <set>
+        <option value="$PROJECT_DIR$/al-safar-backend" />
+        <option value="$PROJECT_DIR$/al-safar-backend/venv/lib/python3.14/site-packages" />
+        <option value="$PROJECT_DIR$/shared/src/iosMain/kotlin" />
+        <option value="$PROJECT_DIR$/shared/src/commonMain/kotlin" />
+        <option value="$PROJECT_DIR$/shared/src/androidMain/kotlin" />
+        <option value="$PROJECT_DIR$/shared/src/androidHostTest/kotlin" />
+        <option value="$PROJECT_DIR$/shared/src/androidDeviceTest/kotlin" />
+        <option value="$PROJECT_DIR$/shared/build/generated/res/resValues/debug" />
+      </set>
+    </option>
+  </component>
+</project>

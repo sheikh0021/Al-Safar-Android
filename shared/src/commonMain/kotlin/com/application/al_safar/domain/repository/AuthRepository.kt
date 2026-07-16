@@ -3,7 +3,6 @@ package com.application.al_safar.domain.repository
 import com.application.al_safar.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
-
 interface AuthRepository {
     suspend fun login(email: String, password: String): Result<User>
     suspend fun signup(

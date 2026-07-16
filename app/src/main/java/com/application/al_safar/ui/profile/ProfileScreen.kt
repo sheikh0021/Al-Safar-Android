@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SupportAgent
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -115,14 +116,31 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = state.message,
-                        color = TextSecondaryDarkBg,
-                        fontFamily = Poppins
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = state.message,
+                            color = TextSecondaryDarkBg,
+                            fontFamily = Poppins
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                viewModel.logout()
+                                onLogout()
+                            },
+                            enabled = !isLoggingOut
+                        ) {
+                            Text(
+                                text = if (isLoggingOut) "Please Wait...." else "Sign in Again",
+                                fontFamily = Poppins
+                            )
+                        }
+                    }
+
                 }
             }
 
@@ -443,10 +461,10 @@ private fun ProfileHeader(user: User) {
                         fontSize = 13.sp,
                         color = TextSecondaryDarkBg
                     )
-                    if (!user.phoneNumber.isNullOrBlank()) {
+                    user.phoneNumber?.takeIf { it.isNotBlank() }?.let { phone ->
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = user.phoneNumber,
+                            text = phone,
                             fontFamily = Poppins,
                             fontSize = 13.sp,
                             color = TextSecondaryDarkBg

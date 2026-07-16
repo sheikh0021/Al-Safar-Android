@@ -23,10 +23,20 @@ class SplashViewModel @Inject constructor(
 
     fun checkAuthStatus() {
         viewModelScope.launch {
-            val token = preferencesManager.getAccessToken()
+            val access = preferencesManager.getAccessToken()
+            val refresh = preferencesManager.refreshToken.first()
             val loggedIn = preferencesManager.isLoggedIn()
             _userRole.value = preferencesManager.userRole.first()
-            _isAuthenticated.value = token != null && loggedIn
+
+            // Need both tokens + sticky note. Missing refresh = cannot recover later.
+            val looksValid = loggedIn && !access.isNullOrBlank() && !refresh.isNullOrBlank()
+
+            if (!looksValid && loggedIn) {
+                // Clean half-broken leftovers so next launch is clean
+                preferencesManager.clearAll()
+            }
+
+            _isAuthenticated.value = looksValid
         }
     }
 }

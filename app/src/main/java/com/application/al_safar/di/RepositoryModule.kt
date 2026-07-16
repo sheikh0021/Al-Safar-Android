@@ -3,6 +3,7 @@ package com.application.al_safar.di
 import android.content.Context
 import com.application.al_safar.data.local.dao.*
 import com.application.al_safar.data.local.preferences.PreferencesManager
+import com.application.al_safar.data.remote.AuthRemoteDataSource
 import com.application.al_safar.data.remote.api.*
 import com.application.al_safar.data.remote.interceptors.AuthInterceptor
 import com.application.al_safar.data.repository.*
@@ -33,11 +34,12 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
+        authRemoteDataSource: AuthRemoteDataSource,
         authApi: AuthApi,
         userDao: UserDao,
         preferencesManager: PreferencesManager
     ): AuthRepository {
-        return AuthRepositoryImpl(authApi, userDao, preferencesManager)
+        return AuthRepositoryImpl(authRemoteDataSource, authApi, userDao, preferencesManager)
     }
 
     @Provides
